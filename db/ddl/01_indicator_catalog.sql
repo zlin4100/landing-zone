@@ -3,6 +3,7 @@
 -- 作用：① 防脏数据写入（外键约束）
 --       ② 给 LLM 提供语义上下文（联表查询）
 --       ③ 管理指标生命周期（is_active 字段）
+--       ④ 登记内部合成特征（data_source='INTERNAL_CALC'）
 -- ============================================================
 USE robo_advisor;
 
@@ -14,12 +15,13 @@ CREATE TABLE IF NOT EXISTS indicator_catalog (
                        'macro_secondary',
                        'market',
                        'quant',
-                       'news_policy'
+                       'news_policy',
+                       'internal_derived'
                      )             NOT NULL,
-    data_source      VARCHAR(80)   NOT NULL  COMMENT '数据来源, 如 NBS/PBOC/Wind',
+    data_source      VARCHAR(80)   NOT NULL  COMMENT '数据来源, 如 NBS/PBOC/Wind/INTERNAL_CALC',
     frequency        ENUM('daily','weekly','monthly','quarterly','event')
                                    NOT NULL,
-    value_type       ENUM('yoy','mom','qoq','level','cumulative_yoy','index','rate')
+    value_type       ENUM('yoy','mom','qoq','qoq_sa','level','cumulative_yoy','index','rate','spread')
                                    NOT NULL  COMMENT '调整方式',
     unit             VARCHAR(40)   NULL      COMMENT '单位, 如 %/点/USD/bp',
     history_window   VARCHAR(40)   NULL      COMMENT '近10年/近5年 等',

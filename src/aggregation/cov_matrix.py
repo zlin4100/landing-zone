@@ -14,7 +14,7 @@ from src.utils.db import get_engine
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_TICKERS = ["510300", "518880", "NHCI", "SHIBOR_1W", "CN_BOND_10Y"]
+DEFAULT_TICKERS = ["510300", "518880", "NHCI", "SHIBOR_1W", "CN_BOND_10Y", "CN_BOND_30Y"]
 
 
 def get_cov_matrix(
