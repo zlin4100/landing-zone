@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Raw Data Preview · 智能投顾 3.0</title>
+<script src="chart.umd.min.js"></script>
+<script src="raw_data.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #181c27;
+    --bg3: #1e2235;
+    --border: #2a2f45;
+    --accent: #4f8ef7;
+    --accent2: #7c5af7;
+    --green: #34c97e;
+    --red: #f75a5a;
+    --amber: #f7b84f;
+    --text: #e8ecf8;
+    --text2: #8890ac;
+    --text3: #555d7a;
+    --card-r: 10px;
+    --font: 'SF Pro Text', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    --mono: 'SF Mono', 'Fira Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── */
+  .layout { display: flex; height: 100vh; overflow: hidden; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 0 18px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .sidebar-logo h1 { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: .3px; }
+  .sidebar-logo p  { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+  .nav-section { padding: 6px 10px 2px; font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 18px;
+    cursor: pointer;
+    border-radius: 7px;
+    margin: 1px 6px;
+    color: var(--text2);
+    font-size: 12px;
+    transition: background .15s, color .15s;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: rgba(79,142,247,.15); color: var(--accent); }
+  .nav-item .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .nav-item .badge {
+    margin-left: auto;
+    font-size: 10px; font-weight: 600;
+    background: var(--bg3);
+    color: var(--text3);
+    padding: 1px 6px;
+    border-radius: 20px;
+  }
+
+  /* ── Main ── */
+  .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(15,17,23,.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .topbar h2 { font-size: 15px; font-weight: 600; flex: 1; }
+  .topbar .sub { font-size: 12px; color: var(--text2); }
+
+  .filter-group { display: flex; gap: 4px; }
+  .filter-btn {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .view-toggle { display: flex; gap: 4px; }
+  .view-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .view-btn.active { background: var(--bg3); color: var(--text); }
+
+  /* ── Content area ── */
+  .content { padding: 24px 28px; }
+
+  .section-header {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-header h3 { font-size: 16px; font-weight: 600; }
+  .section-header p { font-size: 12px; color: var(--text2); }
+
+  /* ── Grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--card-r);
+    padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+    transition: border-color .15s;
+  }
+  .card:hover { border-color: #3a3f5a; }
+
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .card-title { font-size: 13px; font-weight: 600; line-height: 1.4; }
+  .card-code  { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  .card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 10px; font-weight: 500;
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .tag.daily   { color: #7c5af7; border-color: rgba(124,90,247,.3); background: rgba(124,90,247,.08); }
+  .tag.monthly { color: #4f8ef7; border-color: rgba(79,142,247,.3); background: rgba(79,142,247,.08); }
+  .tag.annual  { color: #f7b84f; border-color: rgba(247,184,79,.3); background: rgba(247,184,79,.08); }
+
+  /* ── Stats row ── */
+  .stats-row { display: flex; gap: 16px; }
+  .stat { display: flex; flex-direction: column; }
+  .stat-label { font-size: 10px; color: var(--text2); }
+  .stat-val   { font-size: 15px; font-weight: 600; font-family: var(--mono); }
+  .stat-val.up   { color: var(--green); }
+  .stat-val.down { color: var(--red); }
+  .stat-val.flat { color: var(--amber); }
+
+  .change-badge {
+    font-size: 10px; font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+  .change-badge.up   { background: rgba(52,201,126,.15); color: var(--green); }
+  .change-badge.down { background: rgba(247,90,90,.15);  color: var(--red);   }
+
+  /* ── Sparkline ── */
+  .sparkline-wrap { position: relative; height: 60px; }
+  .sparkline-wrap canvas { width: 100% !important; height: 60px !important; }
+
+  /* ── Table (collapsible) ── */
+  .table-toggle {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text2); font-size: 11px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0 0;
+    border-top: 1px solid var(--border);
+  }
+  .table-toggle:hover { color: var(--text); }
+  .table-toggle svg { transition: transform .2s; }
+  .table-toggle.open svg { transform: rotate(90deg); }
+
+  .table-wrap { display: none; overflow: auto; max-height: 240px; margin-top: 8px; }
+  .table-wrap.open { display: block; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td {
+    padding: 5px 8px;
+    text-align: right;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    white-space: nowrap;
+  }
+  th { text-align: left; color: var(--text2); font-weight: 500; position: sticky; top: 0; background: var(--bg3); }
+  td:first-child, th:first-child { text-align: left; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  td.null { color: var(--text3); font-style: italic; }
+
+  /* ── Full table view ── */
+  .section-table { display: none; }
+  .section-table.visible { display: block; }
+  .big-table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--card-r); }
+  .big-table-wrap table th { font-size: 11px; }
+  .big-table-wrap table td { font-size: 11px; }
+
+  /* ── Empty state ── */
+  .empty { padding: 48px; text-align: center; color: var(--text3); }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>Landing Zone</h1>
+      <p>Raw Data Preview · 2025–2026</p>
+    </div>
+    <div class="nav-section">数据分类</div>
+    <div class="nav-item active" data-section="section1" onclick="switchSection('section1', this)">
+      <span class="dot" style="background:#4f8ef7"></span>
+      宏观周期与政策环境
+      <span class="badge">14</span>
+    </div>
+    <div class="nav-item" data-section="section2" onclick="switchSection('section2', this)">
+      <span class="dot" style="background:#34c97e"></span>
+      市场动能拆解
+      <span class="badge">8</span>
+    </div>
+    <div class="nav-item" data-section="section3" onclick="switchSection('section3', this)">
+      <span class="dot" style="background:#7c5af7"></span>
+      国际环境与跨市场映射
+      <span class="badge">4</span>
+    </div>
+    <div class="nav-item" data-section="section4" onclick="switchSection('section4', this)">
+      <span class="dot" style="background:#f7b84f"></span>
+      大类资产驱动与建模数据
+      <span class="badge">8</span>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+    <div class="topbar">
+      <h2 id="topbar-title">宏观周期与政策环境</h2>
+      <span class="sub" id="topbar-sub">14 个指标 · 数据来源 Choice 终端</span>
+      <div class="filter-group">
+        <button class="filter-btn active" onclick="setYear('all', this)">全部</button>
+        <button class="filter-btn" onclick="setYear('2025', this)">2025</button>
+        <button class="filter-btn" onclick="setYear('2026', this)">2026</button>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" onclick="setView('cards', this)" title="卡片视图">⊞ 卡片</button>
+        <button class="view-btn" onclick="setView('table', this)" title="表格视图">☰ 表格</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="cards-view" class="cards-grid"></div>
+      <div id="table-view" class="section-table"></div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ── Metadata ──────────────────────────────────────────────────────────────────
+const META = {
+  // Section 1
+  CPI_YOY:                       { name:'CPI 同比增速',             unit:'%',   freq:'月频', src:'NBS',    color:'#4f8ef7' },
+  PPI_YOY:                       { name:'PPI 全工业品同比',          unit:'%',   freq:'月频', src:'NBS',    color:'#7c5af7' },
+  PMI_MANU:                      { name:'制造业 PMI',               unit:'',    freq:'月频', src:'NBS',    color:'#34c97e' },
+  PMI_SERV:                      { name:'非制造业 PMI',             unit:'',    freq:'月频', src:'NBS',    color:'#4f8ef7' },
+  INDUSTRY_YOY:                  { name:'工业增加值同比',            unit:'%',   freq:'月频', src:'NBS',    color:'#f7b84f' },
+  TSF_STOCK_YOY:                 { name:'社融存量同比',              unit:'%',   freq:'月频', src:'PBOC',   color:'#34c97e' },
+  M2_YOY:                        { name:'M2 同比增速',              unit:'%',   freq:'月频', src:'PBOC',   color:'#4f8ef7' },
+  LPR_1Y:                        { name:'LPR 1年期',               unit:'%',   freq:'月频', src:'PBOC',   color:'#7c5af7' },
+  RRR_LARGE_FIN_INST:            { name:'大型金融机构存款准备金率',    unit:'%',   freq:'月频', src:'PBOC',   color:'#f75a5a' },
+  GOV_EXPEND_CUMULATIVE_YOY:     { name:'财政支出累计同比',          unit:'%',   freq:'月频', src:'MOF',    color:'#f7b84f' },
+  SPECIAL_BOND_ISSUE_CUM:        { name:'新增专项债发行累计',         unit:'亿元', freq:'月频', src:'财政部', color:'#34c97e' },
+  LOCAL_SPECIAL_BOND_TARGET_ANNUAL:{ name:'地方专项债年度目标',       unit:'亿元', freq:'年频', src:'政府工作报告', color:'#f7b84f' },
+  CGB_10Y:                       { name:'10年期国债收益率',          unit:'%',   freq:'日频', src:'中债',   color:'#4f8ef7' },
+  DR007:                         { name:'DR007 利率',               unit:'%',   freq:'日频', src:'中国货币网', color:'#7c5af7' },
+
+  // Section 2
+  RETAIL_SALES_YOY:              { name:'社会消费品零售总额同比',     unit:'%',   freq:'月频', src:'NBS',    color:'#34c97e' },
+  CONSUMER_CONFIDENCE:           { name:'消费者信心指数',            unit:'',    freq:'月频', src:'NBS',    color:'#4f8ef7' },
+  INFRA_INVEST_CUM_YOY:          { name:'基建投资累计同比',          unit:'%',   freq:'月频', src:'NBS',    color:'#f7b84f' },
+  MANUFACTURING_INVEST_CUM_YOY:  { name:'制造业投资累计同比',        unit:'%',   freq:'月频', src:'NBS',    color:'#7c5af7' },
+  REAL_ESTATE_INVEST_CUM_YOY:    { name:'房地产开发投资累计同比',     unit:'%',   freq:'月频', src:'NBS',    color:'#f75a5a' },
+  RESID_HOUSE_SALES_CUMULATIVE_YOY:{ name:'住宅销售额累计同比',      unit:'%',   freq:'月频', src:'NBS',    color:'#34c97e' },
+  EXPORT_CUMULATIVE_YOY:         { name:'出口累计同比',              unit:'%',   freq:'月频', src:'海关总署', color:'#4f8ef7' },
+  PMI_NEW_EXPORT_ORDERS:         { name:'PMI 新出口订单',            unit:'',    freq:'月频', src:'NBS',    color:'#7c5af7' },
+
+  // Section 3
+  BRENT_CRUDE:                   { name:'布伦特原油价格',            unit:'USD/桶', freq:'日频', src:'ICE',  color:'#f7b84f' },
+  XAUUSD:                        { name:'黄金现货价格',              unit:'USD/盎司', freq:'日频', src:'COMEX', color:'#f7b84f' },
+  VIX:                           { name:'CBOE 波动率指数 (VIX)',    unit:'',    freq:'日频', src:'CBOE',  color:'#f75a5a' },
+  FX_CNY_MID:                    { name:'人民币兑美元中间价',         unit:'',    freq:'日频', src:'PBOC',  color:'#34c97e' },
+
+  // Section 4
+  MMF_7D_YIELD_M:                { name:'货基月均七日年化收益率',     unit:'%',   freq:'月频', src:'Choice', color:'#34c97e' },
+  CBOND_NEW_COMPOSITE_WEALTH:    { name:'中债新综合指数（财富）',     unit:'',    freq:'日频', src:'中债',  color:'#4f8ef7' },
+  CGB_3Y:                        { name:'3年期国债收益率',           unit:'%',   freq:'日频', src:'中债',  color:'#7c5af7' },
+  AA_CREDIT_YIELD_3Y:            { name:'AA级信用债收益率（3Y）',    unit:'%',   freq:'日频', src:'中债',  color:'#f75a5a' },
+  CSI300_TR:                     { name:'沪深300全收益指数',         unit:'',    freq:'日频', src:'中证指数', color:'#34c97e' },
+  CSI300:                        { name:'沪深300指数',              unit:'',    freq:'日频', src:'中证指数', color:'#4f8ef7' },
+  AU9999:                        { name:'上金所 Au99.99 收盘价',     unit:'元/克', freq:'日频', src:'上金所', color:'#f7b84f' },
+  NHCI:                          { name:'南华商品指数',              unit:'',    freq:'日频', src:'南华期货', color:'#7c5af7' },
+};
+
+const SECTIONS = {
+  section1: { title:'宏观周期与政策环境', sub:'14 个指标 · 数据来源 Choice 终端 / NBS / PBOC / MOF', codes: ['CPI_YOY','PPI_YOY','PMI_MANU','PMI_SERV','INDUSTRY_YOY','TSF_STOCK_YOY','M2_YOY','LPR_1Y','RRR_LARGE_FIN_INST','GOV_EXPEND_CUMULATIVE_YOY','SPECIAL_BOND_ISSUE_CUM','LOCAL_SPECIAL_BOND_TARGET_ANNUAL','CGB_10Y','DR007'] },
+  section2: { title:'市场动能拆解',       sub:'8 个指标 · 数据来源 NBS / 海关总署',  codes: ['RETAIL_SALES_YOY','CONSUMER_CONFIDENCE','INFRA_INVEST_CUM_YOY','MANUFACTURING_INVEST_CUM_YOY','REAL_ESTATE_INVEST_CUM_YOY','RESID_HOUSE_SALES_CUMULATIVE_YOY','EXPORT_CUMULATIVE_YOY','PMI_NEW_EXPORT_ORDERS'] },
+  section3: { title:'国际环境与跨市场映射', sub:'4 个指标 · 数据来源 ICE / COMEX / CBOE / PBOC', codes: ['BRENT_CRUDE','XAUUSD','VIX','FX_CNY_MID'] },
+  section4: { title:'大类资产驱动与建模数据', sub:'8 个指标 · 数据来源 中债 / 中证指数 / 上金所 / 南华期货', codes: ['MMF_7D_YIELD_M','CBOND_NEW_COMPOSITE_WEALTH','CGB_3Y','AA_CREDIT_YIELD_3Y','CSI300_TR','CSI300','AU9999','NHCI'] },
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let currentSection = 'section1';
+let currentYear    = 'all';
+let currentView    = 'cards';
+const chartInstances = {};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function filterByYear(dates, values, year) {
+  if (year === 'all') return { dates, values };
+  const fd = [], fv = [];
+  dates.forEach((d, i) => { if (String(d).startsWith(year)) { fd.push(d); fv.push(values[i]); } });
+  return { dates: fd, values: fv };
+}
+
+function fmt(v) {
+  if (v === null || v === undefined) return '—';
+  return typeof v === 'number' ? v.toLocaleString('zh-CN', { maximumFractionDigits: 4 }) : v;
+}
+
+function latest(values) {
+  for (let i = values.length - 1; i >= 0; i--) {
+    if (values[i] !== null && values[i] !== undefined) return values[i];
+  }
+  return null;
+}
+
+function getChange(values) {
+  const last = latest(values);
+  if (last === null) return null;
+  let prev = null;
+  let found = false;
+  for (let i = values.length - 1; i >= 0; i--) {
+    if (values[i] !== null) {
+      if (!found) { found = true; continue; }
+      prev = values[i]; break;
+    }
+  }
+  if (prev === null) return null;
+  return last - prev;
+}
+
+function changeClass(v) {
+  if (v === null) return '';
+  if (v > 0) return 'up';
+  if (v < 0) return 'down';
+  return 'flat';
+}
+
+function sparklineColor(code) {
+  return META[code]?.color || '#4f8ef7';
+}
+
+// ── Sparkline ─────────────────────────────────────────────────────────────────
+function drawSparkline(canvasId, dates, values, color) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); }
+
+  const clean = values.map(v => v === null ? NaN : v);
+  chartInstances[canvasId] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        data: clean,
+        borderColor: color,
+        borderWidth: 1.5,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.3,
+        fill: true,
+        backgroundColor: (ctx2) => {
+          const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, 60);
+          g.addColorStop(0, color + '33');
+          g.addColorStop(1, color + '00');
+          return g;
+        },
+        spanGaps: true,
+      }],
+    },
+    options: {
+      responsive: false,
+      animation: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: {
+          title: items => items[0].label,
+          label: item => fmt(item.raw),
+        },
+        backgroundColor: '#1e2235',
+        titleColor: '#8890ac',
+        bodyColor: '#e8ecf8',
+        borderColor: '#2a2f45',
+        borderWidth: 1,
+        padding: 8,
+      }},
+      scales: { x: { display: false }, y: { display: false } },
+    },
+  });
+}
+
+// ── Card builder ──────────────────────────────────────────────────────────────
+function buildCard(code, section) {
+  const raw = RAW_DATA[section][code];
+  if (!raw) return '';
+  const meta = META[code] || { name: code, unit: '', freq: '?', src: '?', color: '#4f8ef7' };
+
+  const { dates, values } = filterByYear(raw.dates, raw.values, currentYear);
+  const lat = latest(values);
+  const chg = getChange(values);
+  const cls = changeClass(chg);
+  const freqCls = meta.freq.includes('日') ? 'daily' : meta.freq.includes('年') ? 'annual' : 'monthly';
+
+  const chgBadge = chg !== null
+    ? `<span class="change-badge ${cls}">${chg > 0 ? '+' : ''}${chg.toFixed(3)}</span>`
+    : '';
+
+  // Table rows (last 20 for daily, all for monthly)
+  const rowsToShow = dates.length > 30 ? dates.slice(-30) : dates;
+  const valsToShow = dates.length > 30 ? values.slice(-30) : values;
+  const tableRows = rowsToShow.map((d, i) => {
+    const v = valsToShow[i];
+    return `<tr><td>${d}</td><td class="${v === null ? 'null' : ''}">${fmt(v)}${meta.unit ? ' <small style="color:var(--text3)">' + meta.unit + '</small>' : ''}</td></tr>`;
+  }).reverse().join('');
+
+  const canvasId = `spark-${code}`;
+  return `
+  <div class="card" id="card-${code}">
+    <div class="card-head">
+      <div>
+        <div class="card-title">${meta.name}</div>
+        <div class="card-code">${code}</div>
+      </div>
+    </div>
+    <div class="card-meta">
+      <span class="tag ${freqCls}">${meta.freq}</span>
+      <span class="tag">${meta.src}</span>
+      ${meta.unit ? `<span class="tag">${meta.unit}</span>` : ''}
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-label">最新值</span>
+        <span class="stat-val ${cls}">${lat !== null ? fmt(lat) : '—'}${meta.unit ? ' <small style="color:var(--text3);font-size:10px">' + meta.unit + '</small>' : ''}${chgBadge}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">数据点</span>
+        <span class="stat-val flat">${dates.filter((_,i) => values[i] !== null).length}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">起止</span>
+        <span class="stat-val" style="font-size:11px;color:var(--text2)">${dates[0] || '—'}</span>
+      </div>
+    </div>
+    <div class="sparkline-wrap">
+      <canvas id="${canvasId}" width="280" height="60"></canvas>
+    </div>
+    <div class="table-toggle" onclick="toggleTable('tbl-${code}', this)">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+        <path d="M3 1.5L7 5L3 8.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      展开数据表（显示最近 ${rowsToShow.length} 条）
+    </div>
+    <div class="table-wrap" id="tbl-${code}">
+      <table>
+        <thead><tr><th>日期</th><th>数值</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function toggleTable(id, btn) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+  btn.classList.toggle('open');
+  const txt = btn.querySelector('svg').nextSibling;
+  if (el.classList.contains('open')) {
+    btn.lastChild.textContent = ' 收起数据表';
+  } else {
+    const n = el.querySelectorAll('tbody tr').length;
+    btn.lastChild.textContent = ` 展开数据表（显示最近 ${n} 条）`;
+  }
+}
+
+// ── Table view ────────────────────────────────────────────────────────────────
+function buildTableView(section) {
+  const codes = SECTIONS[section].codes;
+  // Collect all dates across all codes
+  const dateSet = new Set();
+  codes.forEach(code => {
+    const raw = RAW_DATA[section][code];
+    if (!raw) return;
+    const { dates } = filterByYear(raw.dates, raw.values, currentYear);
+    dates.forEach(d => dateSet.add(d));
+  });
+  const allDates = Array.from(dateSet).sort().reverse();
+
+  const headers = codes.map(c => `<th title="${c}">${META[c]?.name || c}</th>`).join('');
+  const rows = allDates.map(date => {
+    const cells = codes.map(code => {
+      const raw = RAW_DATA[section][code];
+      if (!raw) return '<td class="null">—</td>';
+      const { dates, values } = filterByYear(raw.dates, raw.values, currentYear);
+      const idx = dates.indexOf(date);
+      const v = idx >= 0 ? values[idx] : null;
+      return `<td class="${v === null ? 'null' : ''}">${fmt(v)}</td>`;
+    }).join('');
+    return `<tr><td>${date}</td>${cells}</tr>`;
+  }).join('');
+
+  return `
+  <div class="big-table-wrap">
+    <table>
+      <thead><tr><th>日期</th>${headers}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const sec = SECTIONS[currentSection];
+  document.getElementById('topbar-title').textContent = sec.title;
+  document.getElementById('topbar-sub').textContent = sec.sub;
+
+  const cardsEl = document.getElementById('cards-view');
+  const tableEl = document.getElementById('table-view');
+
+  if (currentView === 'cards') {
+    cardsEl.style.display = '';
+    tableEl.style.display = 'none';
+    cardsEl.innerHTML = sec.codes.map(c => buildCard(c, currentSection)).join('');
+    // Draw sparklines after DOM insertion
+    sec.codes.forEach(code => {
+      const raw = RAW_DATA[currentSection][code];
+      if (!raw) return;
+      const { dates, values } = filterByYear(raw.dates, raw.values, currentYear);
+      drawSparkline(`spark-${code}`, dates, values, META[code]?.color || '#4f8ef7');
+    });
+  } else {
+    cardsEl.style.display = 'none';
+    tableEl.style.display = 'block';
+    tableEl.innerHTML = buildTableView(currentSection);
+  }
+}
+
+// ── Controls ──────────────────────────────────────────────────────────────────
+function switchSection(section, el) {
+  currentSection = section;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function setYear(year, btn) {
+  currentYear = year;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function setView(view, btn) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', render);
+</script>
+</body>
+</html>
