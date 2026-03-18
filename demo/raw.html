@@ -273,6 +273,81 @@
   .event-table-wrap td.ev-abstract { color: var(--text2); font-size: 11px; max-width: 380px; line-height: 1.5; }
   .event-table-wrap tr:hover td { background: rgba(255,255,255,.018); }
   .event-empty { padding: 60px; text-align: center; color: var(--text3); }
+
+  /* ── Extraction Example Panel ───────────────────────────────────────────── */
+  .extraction-panel {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--card-r);
+    padding: 20px; margin-bottom: 28px;
+  }
+  .extraction-panel-header {
+    display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px;
+    border-bottom: 1px solid var(--border); padding-bottom: 12px;
+  }
+  .extraction-panel-header .label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3);
+  }
+  .extraction-panel-header .source-name {
+    font-size: 12px; color: var(--text2);
+  }
+  .extraction-panel-header .source-name strong { color: var(--accent); font-weight: 600; }
+  .extraction-body {
+    display: grid; grid-template-columns: 1fr 36px 1fr; gap: 0; align-items: start;
+  }
+  /* Left: raw source */
+  .extraction-source { border-right: 1px solid var(--border); padding-right: 20px; }
+  .extraction-source-title {
+    font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 12px;
+  }
+  .news-item {
+    padding: 8px 10px; border-radius: 6px; margin-bottom: 6px;
+    font-size: 11px; line-height: 1.65; color: var(--text3);
+    border: 1px solid transparent;
+    transition: opacity .2s;
+  }
+  .news-item .num { font-family: var(--mono); font-weight: 700; margin-right: 4px; }
+  .news-item .headline { font-weight: 600; }
+  .news-item .body { margin-top: 3px; }
+  .news-item.dim { opacity: .35; }
+  .news-item.active {
+    background: rgba(247,184,79,.07); border-color: rgba(247,184,79,.25);
+    color: var(--text);
+  }
+  .news-item.active .num { color: var(--amber); }
+  /* Arrow */
+  .extraction-arrow {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding-top: 52px; color: var(--text3); font-size: 18px; user-select: none;
+  }
+  .extraction-arrow span { font-size: 9px; color: var(--text3); margin-top: 4px; letter-spacing: .5px; }
+  /* Right: result */
+  .extraction-result { padding-left: 20px; }
+  .extraction-result-title {
+    font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 12px;
+  }
+  .extracted-event-card {
+    background: var(--bg3); border: 1px solid var(--border); border-left: 3px solid var(--green);
+    border-radius: 8px; padding: 14px; margin-bottom: 12px;
+  }
+  .extracted-event-card .ev-title {
+    font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px;
+  }
+  .json-block {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 12px 14px; font-family: var(--mono); font-size: 11px; line-height: 1.8;
+    color: var(--text2); white-space: pre; overflow-x: auto;
+  }
+  .json-block .jk { color: #7c5af7; }   /* key */
+  .json-block .jv { color: #34c97e; }   /* string value */
+  .extraction-verdict {
+    font-size: 11px; color: var(--text2); line-height: 1.65;
+    border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;
+  }
+  .extraction-verdict .badge-ok {
+    display: inline-block; background: rgba(52,201,126,.15); color: var(--green);
+    font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 4px; margin-right: 6px;
+  }
 </style>
 </head>
 <body>
@@ -610,6 +685,71 @@ function buildTableView(section) {
   </div>`;
 }
 
+// ── Extraction Example Data ───────────────────────────────────────────────────
+const EXTRACTION_EXAMPLE = {
+  source: '【大类资产周刊】3月9日–3月15日',
+  items: [
+    { n: 1, headline: '伊朗最高领袖穆杰塔巴发表首份声明',
+      body: '穆杰塔巴表示，伊朗将继续采取包括封锁霍尔木兹海峡在内的战略手段，并在必要时开辟新的战线。' },
+    { n: 2, headline: '潘功胜发声',
+      body: '央行将继续实施好适度宽松的货币政策，加大逆周期和跨周期调节力度，为经济持续向好创造适宜的货币金融环境。' },
+    { n: 3, headline: '国际能源署释放石油储备', active: true,
+      body: 'IEA 32个成员国一致同意，将紧急储备中的 4亿桶石油投入市场，以应对中东战争引发的石油市场扰乱。' },
+    { n: 4, headline: '工信部发布防范"龙虾"风险建议',
+      body: '针对 OpenClaw 开源智能体安全风险，发布"六要六不要"建议。' },
+    { n: 5, headline: '七国集团联合声明',
+      body: 'G7 能源部长原则上支持动用战略能源储备，与 IEA 密切协调应对中东冲突对能源市场的影响。' },
+  ],
+  extracted: {
+    title: '国际能源署释放石油储备',
+    fields: [
+      { k: 'subject', v: '国际能源署及成员国' },
+      { k: 'action',  v: '释放石油储备' },
+      { k: 'object',  v: '4 亿桶石油' },
+      { k: 'result',  v: '增加市场石油供给' },
+    ],
+    verdict: '明确主体、动作、对象、结果均完整，直接作用于能源供给与油价，是最标准的原子市场事件。',
+  },
+};
+
+function buildExtractionPanel() {
+  const ex = EXTRACTION_EXAMPLE;
+  const itemsHtml = ex.items.map(it => `
+    <div class="news-item ${it.active ? 'active' : 'dim'}">
+      <span class="num">${it.n}.</span><span class="headline">${it.headline}</span>
+      <div class="body">${it.body}</div>
+    </div>`).join('');
+
+  const jsonLines = ex.extracted.fields.map(f =>
+    `  <span class="jk">"${f.k}"</span>: <span class="jv">"${f.v}"</span>`
+  ).join(',\n');
+
+  return `
+  <div class="extraction-panel">
+    <div class="extraction-panel-header">
+      <span class="label">数据来源示例</span>
+      <span class="source-name"><strong>${ex.source}</strong> → 原子事件提炼</span>
+    </div>
+    <div class="extraction-body">
+      <div class="extraction-source">
+        <div class="extraction-source-title">原始资讯（5 条）</div>
+        ${itemsHtml}
+      </div>
+      <div class="extraction-arrow">→<span>提炼</span></div>
+      <div class="extraction-result">
+        <div class="extraction-result-title">可用的原子事件（1 条）</div>
+        <div class="extracted-event-card">
+          <div class="ev-title">${ex.extracted.title}</div>
+          <div class="json-block">{\n${jsonLines}\n}</div>
+        </div>
+        <div class="extraction-verdict">
+          <span class="badge-ok">✓ 通过</span>${ex.extracted.verdict}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
 // ── Event Rendering ───────────────────────────────────────────────────────────
 const EVENT_TYPE_COLOR = {
   '中东局势动荡':       '#f75a5a',
@@ -685,6 +825,7 @@ function renderEvents() {
   cardsEl.innerHTML = `
     <div class="events-wrap">
       ${featuredHtml}
+      ${buildExtractionPanel()}
       <div class="event-list-header">原子事件列表 · 共 ${filtered.length} 条</div>
       <div class="event-table-wrap">
         <table>
