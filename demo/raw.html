@@ -236,6 +236,43 @@
     .sidebar { display: none; }
     .cards-grid { grid-template-columns: 1fr; }
   }
+
+  /* ── Event Section ──────────────────────────────────────────────────────── */
+  .events-wrap { display: flex; flex-direction: column; gap: 0; }
+  .events-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text3); margin-bottom: 14px;
+  }
+  .event-featured-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 28px;
+  }
+  .event-card {
+    background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--amber);
+    border-radius: var(--card-r); padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .event-card-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .event-id { font-size: 10px; font-weight: 700; font-family: var(--mono); background: var(--bg3); color: var(--text3); padding: 2px 7px; border-radius: 4px; }
+  .event-title { font-size: 13px; font-weight: 600; line-height: 1.5; color: var(--text); }
+  .event-abstract { font-size: 11px; color: var(--text2); line-height: 1.7; flex: 1; }
+  .event-date { font-size: 10px; font-family: var(--mono); color: var(--text3); margin-top: auto; }
+  .risk-badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; margin-left: auto; }
+  .risk-badge.pos { background: rgba(52,201,126,.15);  color: var(--green); }
+  .risk-badge.neg { background: rgba(247,90,90,.15);   color: var(--red);   }
+  .risk-badge.neu { background: var(--bg3);            color: var(--text3); }
+
+  .event-list-header {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text3); padding: 14px 0 10px; border-top: 1px solid var(--border);
+  }
+  .event-table-wrap { overflow-x: auto; }
+  .event-table-wrap table { width: 100%; border-collapse: collapse; }
+  .event-table-wrap th, .event-table-wrap td {
+    padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+  .event-table-wrap th { color: var(--text2); font-weight: 500; background: var(--bg3); position: sticky; top: 0; }
+  .event-table-wrap td.ev-abstract { color: var(--text2); font-size: 11px; max-width: 380px; line-height: 1.5; }
+  .event-table-wrap tr:hover td { background: rgba(255,255,255,.018); }
+  .event-empty { padding: 60px; text-align: center; color: var(--text3); }
 </style>
 </head>
 <body>
@@ -268,6 +305,12 @@
       <span class="dot" style="background:#f7b84f"></span>
       大类资产驱动与建模数据
       <span class="badge">8</span>
+    </div>
+    <div class="nav-section" style="margin-top:8px">事件</div>
+    <div class="nav-item" data-section="events" onclick="switchSection('events', this)">
+      <span class="dot" style="background:#f75a5a"></span>
+      市场事件
+      <span class="badge" id="events-badge">30</span>
     </div>
   </aside>
 
@@ -567,8 +610,95 @@ function buildTableView(section) {
   </div>`;
 }
 
+// ── Event Rendering ───────────────────────────────────────────────────────────
+const EVENT_TYPE_COLOR = {
+  '中东局势动荡':       '#f75a5a',
+  '美国关税政策变动':   '#f7b84f',
+  '公开市场操作':       '#4f8ef7',
+  '消费刺激':           '#34c97e',
+  '财政政策宽松':       '#34c97e',
+  '贸易政策宽松':       '#34c97e',
+  '区域政策变动':       '#7c5af7',
+  '海外重要经济数据发布':'#8890ac',
+  '海外禁令发布':       '#f7b84f',
+  '乡村振兴':           '#34c97e',
+};
+
+function riskClass(r) { return r === '正面' ? 'pos' : r === '负面' ? 'neg' : 'neu'; }
+function riskLabel(r) { return (!r || r === '-') ? '中性' : r; }
+
+function buildFeaturedCard(ev) {
+  const tc = EVENT_TYPE_COLOR[ev.type] || '#8890ac';
+  return `
+  <div class="event-card">
+    <div class="event-card-header">
+      <span class="event-id">#${ev.id}</span>
+      <span class="tag" style="color:${tc};border-color:${tc}33;background:${tc}12">${ev.type}</span>
+      <span class="risk-badge ${riskClass(ev.risk)}">${riskLabel(ev.risk)}</span>
+    </div>
+    <div class="event-title">${ev.title}</div>
+    <div class="event-abstract">${ev.abstract}</div>
+    <div class="event-date">${ev.date}</div>
+  </div>`;
+}
+
+function buildEventRow(ev) {
+  const tc = EVENT_TYPE_COLOR[ev.type] || '#8890ac';
+  return `<tr>
+    <td style="font-family:var(--mono);color:var(--text3)">${ev.id}</td>
+    <td style="font-family:var(--mono);color:var(--text3);white-space:nowrap">${ev.date}</td>
+    <td style="font-weight:500">${ev.title}</td>
+    <td><span style="color:${tc};font-size:11px">${ev.type}</span></td>
+    <td><span class="risk-badge ${riskClass(ev.risk)}">${riskLabel(ev.risk)}</span></td>
+    <td class="ev-abstract">${ev.abstract}</td>
+  </tr>`;
+}
+
+function renderEvents() {
+  const filtered = EVENTS_DATA.events.filter(e =>
+    currentYear === 'all' || String(e.date).startsWith(currentYear)
+  );
+  document.getElementById('topbar-title').textContent = '市场事件';
+  document.getElementById('topbar-sub').textContent =
+    `${filtered.length} 个原子事件 · 数据来源 Choice 妙想 AI`;
+  document.getElementById('events-badge').textContent = String(filtered.length);
+
+  const cardsEl = document.getElementById('cards-view');
+  const tableEl = document.getElementById('table-view');
+  cardsEl.style.display = 'block'; // override grid
+  tableEl.style.display = 'none';
+
+  if (filtered.length === 0) {
+    cardsEl.innerHTML = '<div class="event-empty">该年度暂无事件数据</div>';
+    return;
+  }
+
+  const featured = EVENTS_DATA.curated
+    .map(id => filtered.find(e => e.id === id))
+    .filter(Boolean);
+
+  const featuredHtml = featured.length ? `
+    <div class="events-section-label">经筛选重点事件 · 影响范围 × 传导直接性 × 已验证程度</div>
+    <div class="event-featured-grid">${featured.map(buildFeaturedCard).join('')}</div>
+  ` : '';
+
+  cardsEl.innerHTML = `
+    <div class="events-wrap">
+      ${featuredHtml}
+      <div class="event-list-header">原子事件列表 · 共 ${filtered.length} 条</div>
+      <div class="event-table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>日期</th><th>标题</th><th>事件类型</th><th>风险</th><th>摘要</th></tr></thead>
+          <tbody>${filtered.map(buildEventRow).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
 // ── Render ────────────────────────────────────────────────────────────────────
 function render() {
+  if (currentSection === 'events') { renderEvents(); return; }
+
   const sec = SECTIONS[currentSection];
   document.getElementById('topbar-title').textContent = sec.title;
   document.getElementById('topbar-sub').textContent = sec.sub;
@@ -599,6 +729,7 @@ function switchSection(section, el) {
   currentSection = section;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
+  document.querySelector('.view-toggle').style.display = section === 'events' ? 'none' : '';
   render();
 }
 

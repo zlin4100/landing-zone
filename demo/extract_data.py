@@ -87,6 +87,24 @@ def read_annual(path: Path, col_idx: int, code: str) -> dict:
     return {code: {"dates": dates, "values": values}}
 
 
+def read_events(path: Path) -> list:
+    """Read events xlsx; return list of event dicts."""
+    df = pd.read_excel(path, sheet_name=0, header=0)
+    df = df.dropna(subset=["序号"])
+    df = df[df["序号"].astype(str).str.strip().str.isdigit()]
+    events = []
+    for _, row in df.iterrows():
+        events.append({
+            "id": int(row["序号"]),
+            "date": str(row["日期"])[:10] if pd.notna(row["日期"]) else "",
+            "title": str(row["标题"]) if pd.notna(row["标题"]) else "",
+            "type": str(row["事件类型"]) if pd.notna(row["事件类型"]) else "",
+            "abstract": str(row["摘要"]) if pd.notna(row["摘要"]) else "",
+            "risk": str(row["风险类型"]) if pd.notna(row["风险类型"]) else "-",
+        })
+    return events
+
+
 def main():
     data = {}
 
@@ -155,9 +173,20 @@ def main():
     s4.update(read_kline(BASE / "data/raw/daily/K线导出_NHCI_日线数据.xlsx", "NHCI"))
     data["section4"] = s4
 
+    # ── Events: 市场事件 ──────────────────────────────────────────────────────
+    print("Events ...")
+    events = read_events(BASE / "data/raw/event/事件大全.xlsx")
+
     # Write JS file
     json_str = json.dumps(data, ensure_ascii=False)
-    OUT.write_text(f"const RAW_DATA = {json_str};\n", encoding="utf-8")
+    events_json = json.dumps(
+        {"curated": [15, 1, 27], "events": events}, ensure_ascii=False
+    )
+    OUT.write_text(
+        f"const RAW_DATA = {json_str};\n"
+        f"const EVENTS_DATA = {events_json};\n",
+        encoding="utf-8",
+    )
     print(f"Written → {OUT}  ({OUT.stat().st_size // 1024} KB)")
 
 
