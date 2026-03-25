@@ -3,6 +3,7 @@
 > **废弃目录**：`deprecated/` 内文件不参与任何 ETL 处理，忽略即可。
 >
 > **重叠处理**：同一指标出现在多个文件时，以**数据截止日期最晚**的文件为准。
+> **采购清单对齐**：凡**不在《数据采购清单v3》中的指标**，统一移入 `deprecated/`；若文件中仅部分列不在清单中，则保留文件，但这些列在 ETL 中跳过。
 > 文件名中的 `YYYYMMDD` 是**导出日期**，不是数据截止日期；截止日期见下表。
 
 ---
@@ -25,7 +26,6 @@
 | M2_YOY | EMM00087086 | 中国:M2:同比 | 1953-12 ~ 2026-02 | `marco_meeting_318.xlsx` |
 | URBAN_SURVEYED_UNEMPLOYMENT_RATE | EMM00631597 | 中国:城镇调查失业率 | 1953-12 ~ 2026-02 | `marco_meeting_318.xlsx` |
 | URBAN_DISPOSABLE_INCOME_CUM_YOY | EMM00597048 | 中国:城镇居民人均可支配收入:实际累计同比 | 1953-12 ~ 2026-02 | `marco_meeting_318.xlsx` |
-| IMPORT_CUMULATIVE_YOY | EMM00042521 | 中国:进口金额:累计同比 | 1953-12 ~ 2026-02 | `marco_meeting_318.xlsx` |
 | EXPORT_AMOUNT_YOY | EMM00183406 | 中国:出口金额:同比 | 2014-01 ~ 2026-02 | `import_export.xlsx` |
 | IMPORT_AMOUNT_YOY | EMM00183407 | 中国:进口金额:同比 | 2014-01 ~ 2026-02 | `import_export.xlsx` |
 | SPECIAL_BOND_ISSUE_CUM | EMM01259587 | 中国:发行地方政府债券:…发行新增专项债券:累计值 | 1999-11 ~ 2026-02 | `marco_0316.xlsx` |
@@ -37,12 +37,8 @@
 | REAL_ESTATE_INVEST_CUM_YOY | EMI00120220 | 中国:房地产开发投资完成额:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
 | INFRA_INVEST_CUM_YOY | EMM00597116 | 中国:城镇固定资产投资完成额:基础设施(不含电力):累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
 | RESID_HOUSE_SALES_CUMULATIVE_YOY | EMM00877640 | 商品房销售额:住宅:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
-| EXPORT_CUMULATIVE_YOY | EMM00183416 | 中国:出口金额:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
 | PMI_NEW_EXPORT_ORDERS | EMM00121999 | 中国:PMI:新出口订单 | 1992-02 ~ 2026-02 | `growth.xlsx` |
-| MMF_7D_YIELD_M | EMI01516342 | 中国货币市场基金月平均七日年化收益率 | 2004-01 ~ 2026-03 | `cash_mmf_yld.xlsx` |
 | GDP_REAL_YOY | EMM00000012 | 中国:GDP:不变价:同比 | 1993-03 ~ 2025-12 | `GDP.xlsx` |
-| PROPERTY_SALES_AREA_30CITIES_ROLLING12M_YOY | EMI01778652 | 中国:30大中城市:商品房成交面积:当月值 | 2006-01 ~ 2026-02 | `housing_318.xlsx` |
-| HOUSE_PRICE_70CITY_SECONDHAND_YOY | EMI01736192 | 70个大中城市:二手住宅价格指数:当月同比 | 2006-01 ~ 2026-02 | `housing_318.xlsx` |
 
 ### daily/
 
@@ -74,13 +70,11 @@
 |---|---|
 | `nbs_macro_core_20260305.xlsx` | NBS 核心 5 指标；按月导出，文件名后缀为导出日期 |
 | `macro_20260310.xlsx` | PBOC / MOF 3 指标；含额外列 LPR_5Y（EMM02326279），ETL 跳过 |
-| `marco_meeting_318.xlsx` | 3/18 补充批次，PBOC / NBS / 海关 5 指标；含额外列 EMM00087129（各项贷款余额:同比）、EMM00088685（社会融资增量:新增人民币贷款），ETL 跳过 |
+| `marco_meeting_318.xlsx` | 3/18 补充批次，PBOC / NBS / 海关文件；采购清单内保留 M1_YOY / M2_YOY / URBAN_SURVEYED_UNEMPLOYMENT_RATE / URBAN_DISPOSABLE_INCOME_CUM_YOY，`IMPORT_CUMULATIVE_YOY` 已移出有效清单并在 ETL 中跳过；另含额外列 EMM00087129（各项贷款余额:同比）、EMM00088685（社会融资增量:新增人民币贷款），ETL 跳过 |
 | `marco_0316.xlsx` | 财政部 / PBOC 2 指标 |
 | `special_bonds_annual.xlsx` | 年频；单列，稳定无需频繁更新 |
-| `growth.xlsx` | NBS / 海关 8 指标合并文件（由旧版 nbs_macro_noncore + growth_momentum 整合而来） |
-| `cash_mmf_yld.xlsx` | 月频；货基 7 日年化收益率，截止当月 |
+| `growth.xlsx` | NBS / 海关合并文件；采购清单内保留 RETAIL_SALES_YOY / CONSUMER_CONFIDENCE / MANUFACTURING_INVEST_CUM_YOY / REAL_ESTATE_INVEST_CUM_YOY / INFRA_INVEST_CUM_YOY / RESID_HOUSE_SALES_CUMULATIVE_YOY / PMI_NEW_EXPORT_ORDERS，`EXPORT_CUMULATIVE_YOY` 已移出有效清单并在 ETL 中跳过 |
 | `GDP.xlsx` | 季频；仅 GDP_REAL_YOY 一列，截止上季度末 |
-| `housing_318.xlsx` | 3/18 补充批次，房地产高频成交与房价 2 指标 |
 | `import_export.xlsx` | 海关总署；出口/进口金额**当月**同比（EMM00183406 / EMM00183407）；与 `growth.xlsx` 的累计同比（EXPORT_CUMULATIVE_YOY / IMPORT_CUMULATIVE_YOY）及 `marco_meeting_318.xlsx` 的进口累计同比为不同口径，不视为同一指标重叠 |
 | `nbs_macro_noncore_20260309.xlsx` | ⚠️ 旧版文件，使用已废弃的 Choice ID；**已被 `growth.xlsx` 完全取代，不得用于 ETL** |
 
@@ -98,3 +92,11 @@
 ### deprecated/（不处理）
 
 `VIX.xlsx` · `china_bond.xlsx` · `gdp_quarter.xlsx` · `growth_momentum.xlsx` · `market_1.xlsx` · `oil.xlsx` · `rates.xlsx` · `公开市场操作.xlsx`
+
+`cash_mmf_yld.xlsx` —— 仅含 `MMF_7D_YIELD_M`，该指标不在《数据采购清单v3》中，移入 deprecated/
+
+`housing_318.xlsx` —— 仅含 `PROPERTY_SALES_AREA_30CITIES_ROLLING12M_YOY`、`HOUSE_PRICE_70CITY_SECONDHAND_YOY`，两指标均不在《数据采购清单v3》中，移入 deprecated/
+
+`marco_meeting_318.xlsx` 中的 `IMPORT_CUMULATIVE_YOY` —— 不在《数据采购清单v3》中，保留文件但该列移出有效清单，ETL 跳过
+
+`growth.xlsx` 中的 `EXPORT_CUMULATIVE_YOY` —— 不在《数据采购清单v3》中，保留文件但该列移出有效清单，ETL 跳过
