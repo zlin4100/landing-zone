@@ -14,23 +14,16 @@ import pandas as pd
 
 DIR = Path(__file__).resolve().parent
 
-WINDOWS = [12, 24, 36, 60, 120, 180, 240]
+WINDOWS = [12, 24, 36, 60, 120, 240]
 
 # 内部计算列名
 RETURN_COLS = ["r_cash", "r_bond", "r_equity", "r_alt"]
 
 # 输出用统一命名
-ASSET_CLASSES = ["CASH", "BOND", "EQUITY", "COMMODITY"]
-COL_NAMES = [
-    "cash_cn_mmf_return",
-    "bond_cn_composite_fullprice_return",
-    "equity_cn_csi300_return",
-    "commodity_cn_nhci_return",
-]
+ASSET_CLASSES = ["CASH", "BOND", "EQUITY", "ALT"]
 
-# 内部列 → 输出列 映射
-_RET_TO_CLASS = dict(zip(RETURN_COLS, ASSET_CLASSES))
-_RET_TO_COL = dict(zip(RETURN_COLS, COL_NAMES))
+# 内部列 → 输出标签
+_RET_TO_LABEL = dict(zip(RETURN_COLS, ASSET_CLASSES))
 
 
 def main():
@@ -81,12 +74,8 @@ def main():
 
         # ── 相关性矩阵 CSV ──
         corr_out = pd.DataFrame(
-            corr.values,
-            index=RETURN_COLS,
-            columns=RETURN_COLS,
+            corr.values, index=ASSET_CLASSES, columns=ASSET_CLASSES,
         )
-        corr_out.index = [_RET_TO_COL[c] for c in RETURN_COLS]
-        corr_out.columns = [_RET_TO_COL[c] for c in RETURN_COLS]
         corr_out.index.name = "asset"
         corr_csv = out_dir / f"corr_{w}M.csv"
         corr_out.round(4).to_csv(corr_csv)
@@ -96,12 +85,8 @@ def main():
 
         # ── 协方差矩阵 CSV ──
         cov_out = pd.DataFrame(
-            cov_annual.values,
-            index=RETURN_COLS,
-            columns=RETURN_COLS,
+            cov_annual.values, index=ASSET_CLASSES, columns=ASSET_CLASSES,
         )
-        cov_out.index = [_RET_TO_COL[c] for c in RETURN_COLS]
-        cov_out.columns = [_RET_TO_COL[c] for c in RETURN_COLS]
         cov_out.index.name = "asset"
         cov_csv = out_dir / f"cov_{w}M.csv"
         cov_out.to_csv(cov_csv, float_format="%.6f")

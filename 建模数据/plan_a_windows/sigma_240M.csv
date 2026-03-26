@@ -2,4 +2,4 @@ asset_class,sigma_ann
 CASH,0.0049
 BOND,0.02
 EQUITY,0.2746
-COMMODITY,0.1326
+ALT,0.1326
