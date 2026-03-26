@@ -1,0 +1,67 @@
+# Input indicators for reverse engineering
+# Each entry: raw_indicator_code, current_meaning, remark (optional)
+
+indicators:
+  - raw_indicator_code: GDP_REAL_YOY
+    current_meaning: "中国:GDP:不变价:当季同比"
+    remark: ""
+
+  - raw_indicator_code: BRENT_CRUDE
+    current_meaning: "期货收盘价(连续):ICE布油"
+    remark: "由日度转月度"
+
+  - raw_indicator_code: XAUUSD
+    current_meaning: "期货收盘价(连续):COMEX黄金"
+    remark: "由日度转月度"
+
+  - raw_indicator_code: M1_YOY
+    current_meaning: "中国:M1:同比"
+    remark: ""
+
+  - raw_indicator_code: DR007
+    current_meaning: "DR007"
+    remark: "由日度转月度"
+
+  - raw_indicator_code: AA_CREDIT_YIELD_3Y
+    current_meaning: "AA级信用债收益率（3年）"
+    remark: "由日度转月度"
+
+  - raw_indicator_code: CGB_3Y
+    current_meaning: "中债国债到期收益率:3年"
+    remark: "由日度转月度"
+
+  - raw_indicator_code: CONSUMER_CONFIDENCE
+    current_meaning: "中国:消费者信心指数"
+    remark: ""
+
+  - raw_indicator_code: INFRA_INVEST_CUM_YOY
+    current_meaning: "基础设施投资:累计同比"
+    remark: ""
+
+  - raw_indicator_code: MANUFACTURING_INVEST_CUM_YOY
+    current_meaning: "制造业投资:累计同比"
+    remark: ""
+
+  - raw_indicator_code: REAL_ESTATE_INVEST_CUM_YOY
+    current_meaning: "房地产开发投资完成额:累计同比"
+    remark: ""
+
+  - raw_indicator_code: PMI_NEW_EXPORT_ORDERS
+    current_meaning: "中国:PMI:新出口订单"
+    remark: ""
+
+  - raw_indicator_code: EXPORT_AMOUNT_YOY
+    current_meaning: "中国:出口金额:同比"
+    remark: ""
+
+  - raw_indicator_code: IMPORT_AMOUNT_YOY
+    current_meaning: "中国:进口金额:同比"
+    remark: ""
+
+  - raw_indicator_code: SPECIAL_BOND_ISSUE_CUM
+    current_meaning: "新增专项债券:累计值"
+    remark: ""
+
+  - raw_indicator_code: LOCAL_SPECIAL_BOND_TARGET_ANNUAL
+    current_meaning: "政府预期目标:地方专项债"
+    remark: ""

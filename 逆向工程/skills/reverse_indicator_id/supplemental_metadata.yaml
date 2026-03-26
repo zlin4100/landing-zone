@@ -1,0 +1,17 @@
+# Supplemental metadata for indicators not found in data-type.csv
+# Used as fallback when CSV lookup fails
+
+indicators:
+  SPECIAL_BOND_ISSUE_CUM:
+    indicator_name: "新增专项债券:累计值"
+    unit: CNY_100M
+    adjustment: Cumulative_Value
+    source: MOF
+    data_type: Fiscal
+
+  LOCAL_SPECIAL_BOND_TARGET_ANNUAL:
+    indicator_name: "政府预期目标:地方专项债"
+    unit: CNY_100M
+    adjustment: Annual_Target
+    source: MOF
+    data_type: Fiscal
