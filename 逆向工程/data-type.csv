@@ -1,33 +1,53 @@
 indicator_code,indicator_name,data_type
 GDP_REAL_YOY,中国:GDP:不变价:当季同比,Growth
-PMI_MANU,中国:PMI,Growth
-PMI_SERV,中国:非制造业PMI,Growth
 INDUSTRY_YOY,工业增加值:同比,Growth
 RETAIL_SALES_YOY,社会消费品零售总额,Growth
-CONSUMER_CONFIDENCE,中国:消费者信心指数,Growth
+
+# Sentiment（信心与景气）
+PMI_MANU,中国:PMI,Sentiment
+PMI_SERV,中国:非制造业PMI,Sentiment
+CONSUMER_CONFIDENCE,中国:消费者信心指数,Sentiment
+PMI_NEW_EXPORT_ORDERS,中国:PMI:新出口订单,Sentiment
+
+# Investment（投资）
 INFRA_INVEST_CUM_YOY,基础设施投资:累计同比,Investment
 MANUFACTURING_INVEST_CUM_YOY,制造业投资:累计同比,Investment
 REAL_ESTATE_INVEST_CUM_YOY,房地产开发投资完成额:累计同比,Real_Estate
+
+# Real_Estate（房地产）
 RESID_HOUSE_SALES_CUMULATIVE_YOY,商品房销售额(住宅),Real_Estate
+
+# Trade（贸易流量）
 EXPORT_AMOUNT_YOY,中国:出口金额:同比,Trade
 IMPORT_AMOUNT_YOY,中国:进口金额:同比,Trade
-PMI_NEW_EXPORT_ORDERS,中国:PMI:新出口订单,Trade
+
+# FX（汇率）
 FX_CNY_MID,中间价:美元兑人民币,FX
+
+# Credit（货币与信用）
 M2_YOY,M2:同比,Credit
 M1_YOY,中国:M1:同比,Credit
 TSF_STOCK_YOY,社融存量:同比,Credit
+
+# Rate（利率）
 DR007,DR007,Rate
 AA_CREDIT_YIELD_3Y,AA级信用债收益率（3年）,Rate
 CGB_3Y,中债国债到期收益率:3年,Rate
 LPR_1Y,LPR:1年期,Rate
+
+# Labor（劳动力市场）
 URBAN_SURVEYED_UNEMPLOYMENT_RATE,城镇调查失业率,Labor
+
+# Fiscal（财政政策）
 GOV_EXPEND_CUMULATIVE_YOY,财政支出累计同比,Fiscal
-SPECIAL_BOND_ISSUE_CUM,新增专项债券:累计值,Fiscal
-LOCAL_SPECIAL_BOND_TARGET_ANNUAL,政府预期目标:地方专项债,Fiscal
-SPECIAL_BOND_PROGRESS,专项债执行进度,Fiscal
-SPECIAL_BOND_ISSUE_MONTHLY,当月专项债新增发行额,Fiscal
+SPECIAL_BOND_ISSUE_CUM,专项债发行累计,Fiscal
+LOCAL_SPECIAL_BOND_TARGET_ANNUAL,专项债年度目标,Fiscal
+
+# Inflation（通货膨胀）
 BRENT_CRUDE,期货收盘价(连续):ICE布油,Inflation
 CPI_YOY,CPI:同比,Inflation
 PPI_YOY,PPI:同比,Inflation
-XAUUSD,期货收盘价(连续):COMEX黄金,Inflation
+
+# Risk_Sentiment（风险偏好）
 VIX,标准普尔500波动率指数(VIX),Risk_Sentiment
+XAUUSD,期货收盘价(连续):COMEX黄金,Risk_Sentiment
