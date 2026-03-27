@@ -1,0 +1,2 @@
+raw_indicator_code,current_meaning,unit,adjustment,source,data_type,round1_indicator_id,round2_indicator_id,consistency,final_indicator_id,final_confidence,notes
+AA_CREDIT_YIELD_3Y,AA级信用债收益率（3年）,%,Level,CHINA_BOND,Rate,AA_CREDIT_YIELD_3Y,AA_CREDIT_YIELD_3Y,high,AA_CREDIT_YIELD_3Y,high,

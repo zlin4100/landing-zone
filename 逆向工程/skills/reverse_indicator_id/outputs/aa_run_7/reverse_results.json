@@ -1,0 +1,30 @@
+[
+  {
+    "raw_indicator_code": "AA_CREDIT_YIELD_3Y",
+    "current_meaning": "AA级信用债收益率（3年）",
+    "indicator_name": "AA级信用债收益率（3年）",
+    "unit": "%",
+    "adjustment": "Level",
+    "source": "CHINA_BOND",
+    "data_type": "Rate",
+    "remark": "由日度转月度",
+    "round1_indicator_id": "CREDIT_YIELD_AA_3Y",
+    "round1_alternatives": [
+      "AA_CREDIT_YIELD_3Y",
+      "CREDIT_YIELD_3Y_AA"
+    ],
+    "round1_confidence": "high",
+    "round1_raw_response": "{\n  \"recommended_indicator_id\": \"CREDIT_YIELD_AA_3Y\",\n  \"alternative_indicator_ids\": [\n    \"AA_CREDIT_YIELD_3Y\",\n    \"CREDIT_YIELD_3Y_AA\"\n  ],\n  \"display_name_cn\": \"AA级信用债收益率（3年）\",\n  \"naming_rationale_short\": \"Standardized format with credit rating (AA), instrument type (CREDIT_YIELD), and tenor (3Y). Main component order prioritizes readability and consistency with financial market conventions.\",\n  \"confidence\": \"high\"\n}",
+    "round2_indicator_id": "AA_CREDIT_YIELD_3Y",
+    "round2_alternatives": [
+      "AA_CREDIT_YTM_3Y",
+      "CREDIT_YIELD_AA_3Y"
+    ],
+    "round2_confidence": "high",
+    "round2_raw_response": "{\n  \"recommended_indicator_id\": \"AA_CREDIT_YIELD_3Y\",\n  \"alternative_indicator_ids\": [\"AA_CREDIT_YTM_3Y\", \"CREDIT_YIELD_AA_3Y\"],\n  \"confidence\": \"high\"\n}",
+    "consistency": "medium",
+    "final_indicator_id": "CREDIT_YIELD_AA_3Y",
+    "final_confidence": "high",
+    "notes": "R1=CREDIT_YIELD_AA_3Y, R2=AA_CREDIT_YIELD_3Y"
+  }
+]
