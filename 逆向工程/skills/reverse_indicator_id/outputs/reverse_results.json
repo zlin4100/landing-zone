@@ -1,7 +1,7 @@
 [
   {
     "raw_indicator_code": "SPECIAL_BOND_ISSUE_CUM",
-    "current_meaning": "新增专项债券:累计值",
+    "current_meaning": "",
     "indicator_name": "中国:发行地方政府债券:按用途划分:发行新增专项债券:累计值",
     "unit": "CNY_100M",
     "adjustment": "",
@@ -11,16 +11,16 @@
     "round1_indicator_id": "SPECIAL_BOND_ISSUE_CUM",
     "round1_alternatives": [
       "LOCAL_GOVT_SPECIAL_BOND_ISSUE_CUM",
-      "NEW_SPECIAL_BOND_ISSUE_CUM"
+      "NEW_SPECIAL_BOND_ISSUE_YTD"
     ],
     "round1_confidence": "high",
-    "round1_raw_response": "{\n  \"recommended_indicator_id\": \"SPECIAL_BOND_ISSUE_CUM\",\n  \"alternative_indicator_ids\": [\n    \"LOCAL_GOVT_SPECIAL_BOND_ISSUE_CUM\",\n    \"NEW_SPECIAL_BOND_ISSUE_CUM\"\n  ],\n  \"display_name_cn\": \"新增专项债券发行额（累计值）\",\n  \"naming_rationale_short\": \"原代码已清晰表达指标含义，SPECIAL_BOND_ISSUE_CUM 简洁且语义明确，符合财政类指标命名惯例；'CUM' 表示累计，与数据频率一致。\",\n  \"confidence\": \"high\"\n}",
+    "round1_raw_response": "{\n  \"recommended_indicator_id\": \"SPECIAL_BOND_ISSUE_CUM\",\n  \"alternative_indicator_ids\": [\n    \"LOCAL_GOVT_SPECIAL_BOND_ISSUE_CUM\",\n    \"NEW_SPECIAL_BOND_ISSUE_YTD\"\n  ],\n  \"display_name_cn\": \"中国地方政府新增专项债券累计发行额\",\n  \"naming_rationale_short\": \"原代码语义清晰，符合财政领域命名习惯，'SPECIAL_BOND_ISSUE_CUM' 准确反映‘新增专项债券’的累计发行特征，且来源为财政部（MOF），适合结构化数据使用。\",\n  \"confidence\": \"high\"\n}",
     "round2_indicator_id": "SPECIAL_BOND_ISSUE_CUM",
     "round2_alternatives": [
-      "SPECIAL_BOND_ISSUANCE_CUM"
+      "LOCAL_GOVT_SPECIAL_BOND_ISSUE_CUM"
     ],
     "round2_confidence": "high",
-    "round2_raw_response": "{\n  \"recommended_indicator_id\": \"SPECIAL_BOND_ISSUE_CUM\",\n  \"alternative_indicator_ids\": [\"SPECIAL_BOND_ISSUANCE_CUM\"],\n  \"confidence\": \"high\"\n}",
+    "round2_raw_response": "{\n  \"recommended_indicator_id\": \"SPECIAL_BOND_ISSUE_CUM\",\n  \"alternative_indicator_ids\": [\"LOCAL_GOVT_SPECIAL_BOND_ISSUE_CUM\"],\n  \"confidence\": \"high\"\n}",
     "consistency": "high",
     "final_indicator_id": "SPECIAL_BOND_ISSUE_CUM",
     "final_confidence": "high",

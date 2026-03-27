@@ -59,7 +59,7 @@ indicators:
     remark: ""
 
   - raw_indicator_code: SPECIAL_BOND_ISSUE_CUM
-    current_meaning: "新增专项债券:累计值"
+    current_meaning: ""
     remark: ""
 
   - raw_indicator_code: LOCAL_SPECIAL_BOND_TARGET_ANNUAL

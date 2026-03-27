@@ -93,10 +93,9 @@ def load_prompt_template(filename: str) -> str:
 
 def build_user_message(ind: IndicatorInput) -> str:
     """Build user message for the model."""
-    parts = [
-        f"Raw indicator code: {ind.raw_indicator_code}",
-        f"Chinese meaning: {ind.current_meaning}",
-    ]
+    parts = [f"Raw indicator code: {ind.raw_indicator_code}"]
+    if ind.current_meaning:
+        parts.append(f"Chinese meaning: {ind.current_meaning}")
     if ind.indicator_name and ind.indicator_name != ind.current_meaning:
         parts.append(f"Indicator name: {ind.indicator_name}")
     if ind.unit:
