@@ -41,7 +41,7 @@ URBAN_SURVEYED_UNEMPLOYMENT_RATE,城镇调查失业率,%,Level,NBS,Labor
 # Fiscal（财政政策）
 GOV_EXPEND_CUM_YOY,财政支出累计同比,%,YoY,MOF,Fiscal
 SPECIAL_BOND_PROGRESS,专项债执行进度,%,Derived,Derived,Fiscal
-SPECIAL_BOND_ISSUE_MONTHLY,当月专项债新增发行额,CNY_100M,Derived,Derived,Fiscal
+SPECIAL_BOND_ISSUE_CUM,中国:发行地方政府债券:按用途划分:发行新增专项债券:累计值,CNY_100M,,MOF,Fiscal
 
 # Inflation（通货膨胀）
 BRENT_CRUDE,期货收盘价(连续):ICE布油,USD/bbl,Level,ICE,Inflation
