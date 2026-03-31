@@ -2,10 +2,11 @@
 评测结果报告查看器
 
 用法：
-    python report.py                          # 查看 eval_results/ 下最新的汇总
+    python report.py                          # 汇总 + 各轮得分趋势
     python report.py --iteration 2            # 查看第 2 轮详细结果
     python report.py --diff 1 3               # 对比第 1 轮和第 3 轮提示词差异
     python report.py --scores                 # 仅显示各轮得分趋势
+    python report.py --evaluators 2           # 第 2 轮各评测器分数对比矩阵
 """
 
 import argparse
@@ -192,6 +193,109 @@ def show_scores():
 
 
 # ============================================================
+# 多评测器对比矩阵
+# ============================================================
+
+def show_evaluators(n: int):
+    """
+    打印第 n 轮中各评测器在每个维度的得分对比矩阵，
+    以及各维度的标准差（评测者一致性）。
+    """
+    iter_file = RESULTS_PATH / f"iteration_{n}.json"
+    if not iter_file.exists():
+        print(f"找不到 iteration_{n}.json")
+        return
+
+    data = json.loads(iter_file.read_text(encoding="utf-8"))
+
+    # 收集 per_evaluator 数据（取第一个测试用例做展示，或平均）
+    eval_results = data.get("eval_results", [])
+    if not eval_results:
+        print("该轮次没有评测结果")
+        return
+
+    # 聚合所有测试用例的 per_evaluator 分数（按评测器→维度→平均）
+    evaluator_dim_scores: dict[str, dict[str, list]] = {}
+    for er in eval_results:
+        for ev_name, ev_result in er.get("per_evaluator", {}).items():
+            if ev_name not in evaluator_dim_scores:
+                evaluator_dim_scores[ev_name] = {d: [] for d in RUBRIC}
+            for dim in RUBRIC:
+                evaluator_dim_scores[ev_name][dim].append(
+                    ev_result["scores"].get(dim, 0.0)
+                )
+
+    if not evaluator_dim_scores:
+        print("该轮次数据中未找到 per_evaluator 字段（可能由旧版 Pipeline 生成）")
+        return
+
+    evaluator_names = sorted(evaluator_dim_scores.keys())
+    dim_names = [v["name"][:6] for v in RUBRIC.values()]
+
+    W = 7  # 列宽
+
+    print(f"\n{'='*68}")
+    print(f"  第 {n} 轮  ·  各评测器维度得分对比")
+    print(f"{'='*68}")
+
+    # 表头
+    header = f"  {'维度':10s}" + "".join(f"{name:>{W}}" for name in evaluator_names) + f"  {'集成均分':>6}  {'标准差':>5}"
+    print(header)
+    print("  " + "─" * (len(header) - 2))
+
+    dims = list(RUBRIC.keys())
+    agg = data.get("aggregated", {})
+    ensemble_avg = agg.get("avg_scores", {})
+    ensemble_std = agg.get("avg_evaluator_std", {})
+
+    for i, dim in enumerate(dims):
+        dim_label = RUBRIC[dim]["name"][:10]
+        ev_scores = []
+        for ev in evaluator_names:
+            vals = evaluator_dim_scores[ev][dim]
+            avg = sum(vals) / len(vals) if vals else 0.0
+            ev_scores.append(avg)
+
+        scores_str = "".join(f"{s:>{W}.1f}" for s in ev_scores)
+        ens_score = ensemble_avg.get(dim, 0.0)
+        std_val   = ensemble_std.get(dim, 0.0)
+
+        # 标准差着色：高分歧(>1.5)红，中等(0.8-1.5)黄，一致(<0.8)绿
+        if std_val >= 1.5:
+            std_str = f"\033[31m{std_val:5.2f}\033[0m"
+        elif std_val >= 0.8:
+            std_str = f"\033[33m{std_val:5.2f}\033[0m"
+        else:
+            std_str = f"\033[32m{std_val:5.2f}\033[0m"
+
+        print(f"  {dim_label:10s}{scores_str}  {ens_score:>6.2f}  {std_str}")
+
+    print("  " + "─" * (len(header) - 2))
+
+    # 合计行
+    total_str = "".join(
+        f"{sum(evaluator_dim_scores[ev][d][0] if evaluator_dim_scores[ev][d] else 0 for d in dims) / len(dims):>{W}.1f}"
+        for ev in evaluator_names
+    )
+    # 各评测器加权总分
+    weighted_str = ""
+    for ev in evaluator_names:
+        from eval_rubric import calculate_weighted_score
+        avg_ev_scores = {
+            d: sum(evaluator_dim_scores[ev][d]) / len(evaluator_dim_scores[ev][d])
+            for d in dims if evaluator_dim_scores[ev][d]
+        }
+        ws = calculate_weighted_score(avg_ev_scores)
+        weighted_str += f"{ws:>{W}.2f}"
+
+    ens_total = agg.get("avg_weighted_score", 0.0)
+    print(f"  {'加权总分':10s}{weighted_str}  {ens_total:>6.2f}")
+    print(f"{'='*68}")
+    print("  标准差说明: \033[32m绿<0.8\033[0m(高一致) \033[33m黄0.8–1.5\033[0m(中等分歧) \033[31m红>1.5\033[0m(高分歧)")
+    print(f"{'='*68}\n")
+
+
+# ============================================================
 # CLI 入口
 # ============================================================
 
@@ -212,6 +316,12 @@ if __name__ == "__main__":
         action="store_true",
         help="只显示各轮得分趋势",
     )
+    parser.add_argument(
+        "--evaluators", "-e",
+        type=int, default=None,
+        metavar="ITERATION",
+        help="显示指定轮次各评测器维度得分对比矩阵（如 --evaluators 2）",
+    )
     args = parser.parse_args()
 
     if not RESULTS_PATH.exists():
@@ -221,6 +331,8 @@ if __name__ == "__main__":
 
     if args.diff:
         show_diff(args.diff[0], args.diff[1])
+    elif args.evaluators is not None:
+        show_evaluators(args.evaluators)
     elif args.iteration is not None:
         show_iteration(args.iteration)
     elif args.scores:

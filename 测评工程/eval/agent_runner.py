@@ -3,17 +3,14 @@
 
 通过 OpenAI 兼容接口调用 qwen3-235b-a22b-instruct-2507，
 将市场上下文数据注入 user 消息，system 消息使用当前（或传入的）系统提示词。
+
+数据来源：eval/demo_market_context.py（eval 目录自包含，不依赖上级文件）
 """
 
-import sys
-import os
 import json
-
-# 将项目根目录加入路径，以便导入 market_context
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from openai import OpenAI
-from market_context import build_market_context, SYSTEM_PROMPT as DEFAULT_SYSTEM_PROMPT
+
+from demo_market_context import build_market_context, DEMO_SYSTEM_PROMPT
 from eval_config import QWEN_API_KEY, QWEN_BASE_URL, QWEN_MODEL
 
 
@@ -36,10 +33,10 @@ def run_market_agent(
 
     Returns:
         {
-            "response":           str,   # 智能体回复文本
-            "prompt_tokens":      int,   # 输入 token 数
-            "completion_tokens":  int,   # 输出 token 数
-            "model":              str,   # 实际使用的模型
+            "response":           str,
+            "prompt_tokens":      int,
+            "completion_tokens":  int,
+            "model":              str,
             "error":              str | None,
         }
     """
@@ -48,7 +45,7 @@ def run_market_agent(
         base_url=QWEN_BASE_URL,
     )
 
-    # 组装市场上下文
+    # 组装 Demo 市场上下文
     ctx = build_market_context(
         markets=markets,
         include_macro=True,
@@ -57,9 +54,10 @@ def run_market_agent(
     )
     market_data_str = json.dumps(ctx["data"], ensure_ascii=False, indent=2)
 
-    effective_system = system_prompt or DEFAULT_SYSTEM_PROMPT
+    # 优先使用外部传入的 system_prompt（迭代优化版本），否则用 Demo 默认提示词
+    effective_system = system_prompt or DEMO_SYSTEM_PROMPT
 
-    # 将数据与查询拼入 user 消息，避免污染 system prompt 缓存
+    # user 消息注入数据 + 查询，避免污染 system prompt 缓存
     user_message = (
         f"## 当前市场数据快照（时间：{ctx['snapshot_time']}）\n\n"
         f"```json\n{market_data_str}\n```\n\n"

@@ -19,13 +19,9 @@
 import argparse
 import json
 import os
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
-
-# 将项目根目录加入路径
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from eval_config import (
     SCORE_THRESHOLD,
@@ -39,8 +35,8 @@ from evaluator import evaluate_response, aggregate_eval_results
 from prompt_optimizer import optimize_prompt
 from eval_rubric import RUBRIC, score_summary
 
-# 初始提示词从 market_context.py 读取
-from market_context import SYSTEM_PROMPT as INITIAL_SYSTEM_PROMPT
+# 初始提示词来自 eval 目录自包含的 Demo 数据（不依赖上级 market_context.py）
+from demo_market_context import DEMO_SYSTEM_PROMPT as INITIAL_SYSTEM_PROMPT
 
 
 # ============================================================
