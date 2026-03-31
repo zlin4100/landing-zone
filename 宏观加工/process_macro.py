@@ -31,6 +31,14 @@ DECIMAL_RULES = {
     "CREDIT_YTM_AA_3Y": 4,
 }
 
+UNIT_RULES = {
+    "SPECIAL_BOND_PROGRESS": "%",
+}
+
+UNIT_RULES = {
+    "SPECIAL_BOND_PROGRESS": "%",
+}
+
 # ---------------------------------------------------------------------------
 # 辅助函数
 # ---------------------------------------------------------------------------
@@ -57,7 +65,7 @@ def to_month_mean(series: pd.Series) -> pd.DataFrame:
     """月均值（跳过 NaN）。"""
     df = series.resample("ME").mean().dropna()
     df.index = df.index.to_period("M").strftime("%Y-%m")
-    return df.rename("value").reset_index().rename(columns={"index": "index"})
+    return df.rename("value").reset_index().rename(columns={"index": "ref_month"})
 
 
 # ---------------------------------------------------------------------------
@@ -66,18 +74,18 @@ def to_month_mean(series: pd.Series) -> pd.DataFrame:
 
 results = []
 
-# --- BRENT_CRUDE (月末值) ---
+# --- BRENT_CRUDE (月均值) ---
 s_brent = load_excel_daily(DAILY / "cross_market.xlsx", "期货收盘价(连续):ICE布油")
 s_brent = s_brent[s_brent.index >= "2024-11-01"]
-df_brent = to_month_end(s_brent)
+df_brent = to_month_mean(s_brent)
 df_brent.columns = ["ref_month", "value"]
 df_brent.insert(0, "indicator_id", "BRENT_CRUDE")
 results.append(df_brent)
 
-# --- XAUUSD (月末值) ---
+# --- XAUUSD (月均值) ---
 s_xau = load_excel_daily(DAILY / "gold.xlsx", "期货收盘价(连续):COMEX黄金")
 s_xau = s_xau[s_xau.index >= "2024-11-01"]
-df_xau = to_month_end(s_xau)
+df_xau = to_month_mean(s_xau)
 df_xau.columns = ["ref_month", "value"]
 df_xau.insert(0, "indicator_id", "XAUUSD")
 results.append(df_xau)
