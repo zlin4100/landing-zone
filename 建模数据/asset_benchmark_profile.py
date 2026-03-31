@@ -41,12 +41,14 @@ WINDOWS = {"1y": 12, "3y": 36, "5y": 60}
 def main():
     # ── 读取已有数据 ──
     returns = pd.read_csv(RETURNS_CSV, index_col="month")
+    # usecols: 只读取 month 和 CGB_1Y 两列，跳过其余列
     rf_raw = pd.read_csv(RAW_CSV, index_col="month", usecols=["month", "CGB_1Y"])
 
     # CGB_1Y 为年化百分比（如 1.26），转为月度无风险利率（如 0.00105）
     rf_monthly = rf_raw["CGB_1Y"] / 100 / 12
 
-    # 按 month 对齐收益率与无风险利率
+    # intersection(): 取两个索引的交集，确保收益率与无风险利率按月份对齐
+    # dropna(): 先排除 CGB_1Y 缺失的月份，再求交集
     common = returns.index.intersection(rf_monthly.dropna().index)
     returns = returns.loc[common, RETURN_COLS]
     rf_monthly = rf_monthly.loc[common]
@@ -56,12 +58,12 @@ def main():
     for asset, col in zip(ASSET_CLASSES, RETURN_COLS):
         row = {"asset_class": asset}
         for label, w in WINDOWS.items():
-            r = returns[col].iloc[-w:]       # 最近 W 个月的资产收益
+            r = returns[col].iloc[-w:]       # iloc[-w:]: 取最后 w 行（最近 W 个月）
             rf = rf_monthly.iloc[-w:]        # 同期月度无风险利率
-            excess = r - rf                  # 月度超额收益
+            excess = r - rf                  # 月度超额收益（逐月相减）
 
-            row[f"ann_return_{label}"] = r.mean() * 12                          # 年化收益
-            row[f"ann_vol_{label}"] = r.std() * np.sqrt(12)                     # 年化波动率
+            row[f"ann_return_{label}"] = r.mean() * 12                          # mean(): 月均收益 → ×12 年化
+            row[f"ann_vol_{label}"] = r.std() * np.sqrt(12)                     # std(): 月波动率 → ×√12 年化
             row[f"sharpe_ratio_{label}"] = excess.mean() / excess.std() * np.sqrt(12)  # 夏普比率
         rows.append(row)
 
@@ -72,7 +74,7 @@ def main():
         "ann_vol_1y", "ann_vol_3y", "ann_vol_5y",
         "sharpe_ratio_1y", "sharpe_ratio_3y", "sharpe_ratio_5y",
     ]
-    df = pd.DataFrame(rows, columns=col_order).round(4)
+    df = pd.DataFrame(rows, columns=col_order).round(4)  # round(4): 保留四位小数
     df.to_csv(OUT_CSV, index=False)
     print(f"✓ {OUT_CSV}")
     print(df.to_string(index=False))

@@ -30,11 +30,13 @@ OUT_CSV = BASE_DIR / "cgb_summary_metrics.csv"  # 输出：季末利率序列
 
 
 def main():
+    # index_col=0: 第一列作为行索引；parse_dates=True: 自动解析为 datetime
     df = pd.read_csv(CSV_IN, index_col=0, parse_dates=True)
     df.index.name = "date"
-    df = df.sort_index()
+    df = df.sort_index()  # 按日期升序排列，确保时间序列顺序正确
 
-    # 按季末重采样，取每季最后一个月的月末值
+    # resample("QE"): 按季末频率重采样；.last(): 取每季最后一个有效值
+    # dropna(): 丢弃任一列为 NaN 的行（数据尚未发布的季度）
     quarterly = df[["CGB_1Y", "CGB_10Y"]].resample("QE").last().dropna()
 
     # 筛选 2021Q1（含）之后的数据
@@ -51,10 +53,10 @@ def main():
     out = (
         quarterly[["quarter_label", "CGB_1Y", "CGB_10Y", "term_spread"]]
         .rename(columns={"CGB_1Y": "CGB_1Y_YTM", "CGB_10Y": "CGB_10Y_YTM"})
-        .round(2)
-        .reset_index()
+        .round(2)           # 保留两位小数
+        .reset_index()      # 将日期索引还原为普通列，便于输出
     )
-    out["date"] = out["date"].dt.strftime("%Y-%m-%d")
+    out["date"] = out["date"].dt.strftime("%Y-%m-%d")  # datetime → "YYYY-MM-DD" 字符串
 
     out.to_csv(OUT_CSV, index=False)
     print(f"✓ {OUT_CSV}")
