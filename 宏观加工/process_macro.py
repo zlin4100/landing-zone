@@ -31,13 +31,7 @@ DECIMAL_RULES = {
     "CREDIT_YTM_AA_3Y": 4,
 }
 
-UNIT_RULES = {
-    "SPECIAL_BOND_PROGRESS": "%",
-}
 
-UNIT_RULES = {
-    "SPECIAL_BOND_PROGRESS": "%",
-}
 
 # ---------------------------------------------------------------------------
 # 辅助函数
