@@ -1,6 +1,7 @@
 """
 宏观指标月频加工
-- 日度转月度：BRENT_CRUDE, XAUUSD, DR007, AA_CREDIT_YIELD_3Y -> CREDIT_YTM_AA_3Y, CGB_3Y -> CGB_3Y_YTM
+- 日度转月度：BRENT_CRUDE, XAUUSD, DR007, FX_CNY_MID, VIX,
+              AA_CREDIT_YIELD_3Y -> CREDIT_YTM_AA_3Y, CGB_3Y -> CGB_3Y_YTM
 - 专项债派生：SPECIAL_BOND_PROGRESS = SPECIAL_BOND_ISSUE_CUM / LOCAL_SPECIAL_BOND_TARGET_ANNUAL
 时间范围：2024-11 起
 """
@@ -19,16 +20,19 @@ OUTPUT.mkdir(exist_ok=True)
 
 START_MONTH = "2024-11"
 
-# 输出精度规则：
-# - 价格/进度类：2位
-# - 利率/收益率类：4位
-DECIMAL_RULES = {
-    "BRENT_CRUDE": 2,
-    "XAUUSD": 2,
-    "SPECIAL_BOND_PROGRESS": 2,
-    "DR007": 4,
-    "CGB_3Y_YTM": 4,
-    "CREDIT_YTM_AA_3Y": 4,
+# 输出精度规则：所有指标统一保留2位小数
+DECIMAL_PLACES = 2  # 所有指标统一保留2位小数
+
+# 指标元数据：unit, adjustment, source, data_type
+INDICATOR_META = {
+    "BRENT_CRUDE":          ("USD/bbl", "Level",   "ICE",        "Inflation"),
+    "XAUUSD":               ("USD/oz",  "Level",   "COMEX",      "Risk_Sentiment"),
+    "FX_CNY_MID":           ("USD/CNY", "Level",   "PBOC",       "FX"),
+    "VIX":                  ("",        "Level",   "CBOE",       "Risk_Sentiment"),
+    "DR007":                ("%",       "Level",   "CFETS",      "Rate"),
+    "CREDIT_YTM_AA_3Y":    ("%",       "Level",   "CHINA_BOND", "Rate"),
+    "CGB_3Y_YTM":          ("%",       "Level",   "CHINA_BOND", "Rate"),
+    "SPECIAL_BOND_PROGRESS": ("%",     "Derived", "Derived",    "Fiscal"),
 }
 
 
@@ -83,6 +87,22 @@ df_xau = to_month_mean(s_xau)
 df_xau.columns = ["ref_month", "value"]
 df_xau.insert(0, "indicator_id", "XAUUSD")
 results.append(df_xau)
+
+# --- FX_CNY_MID (月均值) ---
+s_fx = load_excel_daily(DAILY / "cross_market.xlsx", "中间价:美元兑人民币")
+s_fx = s_fx[s_fx.index >= "2024-11-01"]
+df_fx = to_month_mean(s_fx)
+df_fx.columns = ["ref_month", "value"]
+df_fx.insert(0, "indicator_id", "FX_CNY_MID")
+results.append(df_fx)
+
+# --- VIX (月均值) ---
+s_vix = load_excel_daily(DAILY / "cross_market.xlsx", "标准普尔500波动率指数(VIX)")
+s_vix = s_vix[s_vix.index >= "2024-11-01"]
+df_vix = to_month_mean(s_vix)
+df_vix.columns = ["ref_month", "value"]
+df_vix.insert(0, "indicator_id", "VIX")
+results.append(df_vix)
 
 # --- DR007 (月均值) ---
 s_dr = load_excel_daily(DAILY / "cn_bond_credit_rates_daily.xlsx", "DR007")
@@ -168,12 +188,14 @@ results.append(df_progress)
 # ---------------------------------------------------------------------------
 
 final = pd.concat(results, ignore_index=True)
-final = final[["indicator_id", "ref_month", "value"]]
 final = final.sort_values(["indicator_id", "ref_month"]).reset_index(drop=True)
-final["value"] = final.apply(
-    lambda row: f"{float(row['value']):.{DECIMAL_RULES.get(row['indicator_id'], 4)}f}",
-    axis=1,
-)
+final["value"] = final["value"].apply(lambda v: f"{float(v):.{DECIMAL_PLACES}f}")
+
+# 补充 unit, adjustment, source, data_type
+for col, idx in [("unit", 0), ("adjustment", 1), ("source", 2), ("data_type", 3)]:
+    final[col] = final["indicator_id"].map(lambda x, i=idx: INDICATOR_META.get(x, ("", "", "", ""))[i])
+
+final = final[["indicator_id", "ref_month", "value", "unit", "adjustment", "source", "data_type"]]
 
 out_path = OUTPUT / "processed_macro_2024_11_latest.csv"
 final.to_csv(out_path, index=False)
@@ -189,6 +211,8 @@ print("=" * 60)
 sources = {
     "BRENT_CRUDE": "data/raw/daily/cross_market.xlsx",
     "XAUUSD": "data/raw/daily/gold.xlsx",
+    "FX_CNY_MID": "data/raw/daily/cross_market.xlsx",
+    "VIX": "data/raw/daily/cross_market.xlsx",
     "DR007": "data/raw/daily/cn_bond_credit_rates_daily.xlsx",
     "CREDIT_YTM_AA_3Y": "data/raw/daily/cn_bond_credit_rates_daily.xlsx",
     "CGB_3Y_YTM": "data/raw/daily/cn_bond_credit_rates_daily.xlsx",
