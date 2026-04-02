@@ -16,8 +16,8 @@
 |---|---|---|---|---|
 | CPI_YOY | EMM00072301 | 中国:CPI:同比 | 2006-01 ~ 2026-02 | `nbs_macro_core_20260305.xlsx` |
 | PPI_YOY | EMM00073348 | 中国:PPI:全部工业品:同比 | 2006-01 ~ 2026-02 | `nbs_macro_core_20260305.xlsx` |
-| PMI_MANU | EMM00121996 | 中国:PMI | 2006-01 ~ 2026-02 | `nbs_macro_core_20260305.xlsx` |
-| PMI_SERV | EMM00122009 | 中国:非制造业PMI:商务活动 | 2006-01 ~ 2026-02 | `nbs_macro_core_20260305.xlsx` |
+| PMI_MANU | EMM00121996 | 中国:PMI | 2005-01 ~ 2026-03 | `nbs_macro_core_20260305.xlsx` · `2026-4-2/中国-PMI.xlsx` |
+| PMI_SERV | EMM00122009 | 中国:非制造业PMI:商务活动 | 2007-01 ~ 2026-03 | `nbs_macro_core_20260305.xlsx` · `2026-4-2/中国-非制造业PMI.xlsx` |
 | INDUSTRY_YOY | EMM00008445 | 中国:工业增加值:同比 | 2006-01 ~ 2026-02 | `nbs_macro_core_20260305.xlsx` |
 | TSF_STOCK_YOY | EMM00634721 | 中国:社会融资规模存量:同比 | 1951-12 ~ 2026-02 | `macro_20260310.xlsx` |
 | LPR_1Y | EMM02326278 | 贷款市场报价利率(LPR):1年 | 1951-12 ~ 2026-02 | `macro_20260310.xlsx` |
@@ -32,12 +32,12 @@
 | RRR_LARGE_FIN_INST | EMM01280574 | 中国:人民币存款准备金率:大型存款类金融机构(月) | 1999-11 ~ 2026-02 | `marco_0316.xlsx` |
 | LOCAL_SPECIAL_BOND_TARGET_ANNUAL | EMM01430555 | 中国:政府预期目标:地方专项债 | 2016 ~ 2026 | `special_bonds_annual.xlsx` |
 | RETAIL_SALES_YOY | EMM00063225 | 中国:社会消费品零售总额:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
-| CONSUMER_CONFIDENCE | EMM00122031 | 中国:消费者信心指数 | 1992-02 ~ 2026-02 | `growth.xlsx` |
+| CONSUMER_CONFIDENCE | EMM00122031 | 中国:消费者信心指数 | 1999-01 ~ 2026-02 | `growth.xlsx` · `2026-4-2/中国-消费者信心指数.xlsx` |
 | MANUFACTURING_INVEST_CUM_YOY | EMM00027220 | 中国:固定资产投资完成额:制造业:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
 | REAL_ESTATE_INVEST_CUM_YOY | EMI00120220 | 中国:房地产开发投资完成额:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
 | INFRA_INVEST_CUM_YOY | EMM00597116 | 中国:城镇固定资产投资完成额:基础设施(不含电力):累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
 | RESID_HOUSE_SALES_CUMULATIVE_YOY | EMM00877640 | 商品房销售额:住宅:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
-| PMI_NEW_EXPORT_ORDERS | EMM00121999 | 中国:PMI:新出口订单 | 1992-02 ~ 2026-02 | `growth.xlsx` |
+| PMI_NEW_EXPORT_ORDERS | EMM00121999 | 中国:PMI:新出口订单 | 2005-01 ~ 2026-03 | `growth.xlsx` · `2026-4-2/中国-PMI-新出口订单.xlsx` |
 | GDP_REAL_YOY | EMM00000012 | 中国:GDP:不变价:同比 | 1993-03 ~ 2025-12 | `GDP.xlsx` |
 
 ### daily/
@@ -50,10 +50,10 @@
 | AA_CREDIT_YIELD_3Y | E1000469 | 中债企业债到期收益率(AA):3年 | 2002-01-04 ~ 2026-03-16 | `cn_bond_credit_rates_daily.xlsx` |
 | DR007 | E1300004 | DR007 | 2002-01-04 ~ 2026-03-16 | `cn_bond_credit_rates_daily.xlsx` |
 | CGB_1Y | E1000172 | 中债国债到期收益率:1年 | 2002-01-04 ~ 2026-03-18 | `bond_CGB_1y.xlsx` |
-| BRENT_CRUDE | EMM01588169 | 期货收盘价(连续):ICE布油 | 1975-01-02 ~ 2026-03-16 | `cross_market.xlsx` |
-| VIX | EMG00002651 | 标准普尔500波动率指数(VIX) | 1975-01-02 ~ 2026-03-16 | `cross_market.xlsx` |
+| BRENT_CRUDE | EMM01588169 | 期货收盘价(连续):ICE布油 | 1975-01-02 ~ 2026-03-31 | `cross_market.xlsx` · `2026-4-2/期货收盘价(连续)-ICE布油.xlsx` |
+| VIX | EMG00002651 | 标准普尔500波动率指数(VIX) | 1990-01-02 ~ 2026-03-31 | `cross_market.xlsx` · `2026-4-2/标准普尔500波动率指数(VIX).xlsx` |
 | FX_CNY_MID | EMM00058124 | 中间价:美元兑人民币 | 1975-01-02 ~ 2026-03-16 | `cross_market.xlsx` |
-| XAUUSD | EMI01778678 | 期货收盘价(连续):COMEX黄金 | 1986-07-01 ~ 2026-03-17 | `gold.xlsx` |
+| XAUUSD | EMI01778678 | 期货收盘价(连续):COMEX黄金 | 1986-07-01 ~ 2026-03-31 | `gold.xlsx` · `2026-4-2/期货收盘价(连续)-COMEX黄金.xlsx` |
 | CSI300_TR | H00300 | 沪深300全收益（收盘价列） | 2004-12-31 ~ 2026-03-16 | `K线导出_H00300_日线数据.xlsx` |
 | CSI300 | 000300 | 沪深300（收盘价列） | 2005-01-04 ~ 2026-03-17 | `K线导出_000300_日线数据.xlsx` |
 | AU9999 | AU9999 | 黄金9999（上金所，收盘价列） | 2004-01-02 ~ 2026-03-17 | `K线导出_AU9999_日线数据.xlsx` |
@@ -88,6 +88,18 @@
 | `gold.xlsx` | COMEX 黄金期货收盘价（连续合约）；2026-03-16 从 cross_market.xlsx 拆出独立文件 |
 | `K线导出_*.xlsx` | Choice K线导出格式（含开高低收量）；ETL **只提取收盘价列**，写入 `quant_daily` |
 | `CBA02201.CS行情数据统计明细.xls` | 中债货币市场基金可投资债券财富(总值)指数；Choice 行情导出格式，ETL **只提取收盘价列**；方案A现金主腿 |
+
+### 2026-4-2/（2026-04-02 批次，单指标独立导出）
+
+| 文件 | 指标代码 | 说明 |
+|---|---|---|
+| `中国-PMI.xlsx` | PMI_MANU | 月频；2005-01 ~ 2026-03；新命名规范（中文指标名），取代 nbs_macro_core 中同指标 |
+| `中国-非制造业PMI.xlsx` | PMI_SERV | 月频；2007-01 ~ 2026-03；取代 nbs_macro_core 中同指标 |
+| `中国-PMI-新出口订单.xlsx` | PMI_NEW_EXPORT_ORDERS | 月频；2005-01 ~ 2026-03；取代 growth.xlsx 中同指标 |
+| `中国-消费者信心指数.xlsx` | CONSUMER_CONFIDENCE | 月频；1999-01 ~ 2026-02；取代 growth.xlsx 中同指标 |
+| `期货收盘价(连续)-COMEX黄金.xlsx` | XAUUSD | 日频；1986-07-01 ~ 2026-03-31；截止日比 gold.xlsx 新，可作增量补充 |
+| `期货收盘价(连续)-ICE布油.xlsx` | BRENT_CRUDE | 日频；2013-06-21 ~ 2026-03-31；⚠️ 起始晚于 cross_market.xlsx（1975），历史段仍需原文件 |
+| `标准普尔500波动率指数(VIX).xlsx` | VIX | 日频；1990-01-02 ~ 2026-03-31；⚠️ 起始晚于 cross_market.xlsx（1975），历史段仍需原文件 |
 
 ### deprecated/（不处理）
 
