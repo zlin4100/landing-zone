@@ -15,7 +15,7 @@ BRENT_CRUDE,2025-11,63.48,USD/bbl,Level,ICE,Inflation
 BRENT_CRUDE,2025-12,61.56,USD/bbl,Level,ICE,Inflation
 BRENT_CRUDE,2026-01,64.44,USD/bbl,Level,ICE,Inflation
 BRENT_CRUDE,2026-02,69.45,USD/bbl,Level,ICE,Inflation
-BRENT_CRUDE,2026-03,90.07,USD/bbl,Level,ICE,Inflation
+BRENT_CRUDE,2026-03,96.67,USD/bbl,Level,ICE,Inflation
 CGB_3Y_YTM,2024-11,1.41,%,Level,CHINA_BOND,Rate
 CGB_3Y_YTM,2024-12,1.19,%,Level,CHINA_BOND,Rate
 CGB_3Y_YTM,2025-01,1.31,%,Level,CHINA_BOND,Rate
@@ -115,7 +115,7 @@ VIX,2025-11,19.77,,Level,CBOE,Risk_Sentiment
 VIX,2025-12,15.55,,Level,CBOE,Risk_Sentiment
 VIX,2026-01,16.18,,Level,CBOE,Risk_Sentiment
 VIX,2026-02,19.21,,Level,CBOE,Risk_Sentiment
-VIX,2026-03,24.85,,Level,CBOE,Risk_Sentiment
+VIX,2026-03,25.60,,Level,CBOE,Risk_Sentiment
 XAUUSD,2024-11,2650.10,USD/oz,Level,COMEX,Risk_Sentiment
 XAUUSD,2024-12,2639.88,USD/oz,Level,COMEX,Risk_Sentiment
 XAUUSD,2025-01,2724.42,USD/oz,Level,COMEX,Risk_Sentiment
@@ -132,4 +132,4 @@ XAUUSD,2025-11,4078.93,USD/oz,Level,COMEX,Risk_Sentiment
 XAUUSD,2025-12,4315.34,USD/oz,Level,COMEX,Risk_Sentiment
 XAUUSD,2026-01,4718.40,USD/oz,Level,COMEX,Risk_Sentiment
 XAUUSD,2026-02,5012.89,USD/oz,Level,COMEX,Risk_Sentiment
-XAUUSD,2026-03,5116.18,USD/oz,Level,COMEX,Risk_Sentiment
+XAUUSD,2026-03,4855.53,USD/oz,Level,COMEX,Risk_Sentiment

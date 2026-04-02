@@ -13,6 +13,7 @@ warnings.filterwarnings("ignore")
 
 ROOT = Path(__file__).resolve().parents[1]
 MONTHLY = ROOT / "data/raw/monthly"
+NEW_DATA = ROOT / "data/raw/2026-4-2"
 OUTPUT = Path(__file__).parent / "output"
 OUTPUT.mkdir(exist_ok=True)
 
@@ -38,12 +39,12 @@ INDICATORS = {
     "PMI_MANU": (
         "中国:PMI", "中国:PMI",
         "", "Level", "NBS", "Sentiment",
-        "nbs_macro_core_20260305.xlsx",
+        NEW_DATA / "中国-PMI.xlsx",
     ),
     "PMI_SERV": (
         "中国:非制造业PMI:商务活动", "中国:非制造业PMI",
         "", "Level", "NBS", "Sentiment",
-        "nbs_macro_core_20260305.xlsx",
+        NEW_DATA / "中国-非制造业PMI.xlsx",
     ),
     "INDUSTRY_YOY": (
         "中国:工业增加值:同比", "工业增加值:同比",
@@ -91,7 +92,7 @@ INDICATORS = {
     "CONSUMER_CONFIDENCE": (
         "中国:消费者信心指数", "中国:消费者信心指数",
         "", "Level", "NBS", "Sentiment",
-        "growth.xlsx",
+        NEW_DATA / "中国-消费者信心指数.xlsx",
     ),
     "MANU_INVEST_CUM_YOY": (
         "中国:固定资产投资完成额:制造业:累计同比", "制造业投资:累计同比",
@@ -116,7 +117,7 @@ INDICATORS = {
     "PMI_NEW_EXPORT_ORDERS": (
         "中国:PMI:新出口订单", "中国:PMI:新出口订单",
         "", "Level", "NBS", "Sentiment",
-        "growth.xlsx",
+        NEW_DATA / "中国-PMI-新出口订单.xlsx",
     ),
     # --- import_export.xlsx ---
     "EXPORT_AMOUNT_CNY_YOY": (
@@ -149,10 +150,10 @@ INDICATORS = {
 # 提取函数
 # ---------------------------------------------------------------------------
 
-def load_monthly_indicator(file_name: str, excel_col: str) -> pd.DataFrame:
+def load_monthly_indicator(file_ref: "str | Path", excel_col: str) -> pd.DataFrame:
     """从月频 Excel 提取单列，返回 (ref_month, value) DataFrame。"""
-    path = MONTHLY / file_name
-    df = pd.read_excel(path, sheet_name="指标")
+    path = file_ref if isinstance(file_ref, Path) else MONTHLY / file_ref
+    df = pd.read_excel(path, sheet_name="指标", engine="openpyxl")
     df["日期"] = pd.to_datetime(df["日期"], errors="coerce")
     df = df.dropna(subset=["日期"])
     df["ref_month"] = df["日期"].dt.to_period("M").astype(str)

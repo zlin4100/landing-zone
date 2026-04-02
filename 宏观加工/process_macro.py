@@ -15,6 +15,7 @@ warnings.filterwarnings("ignore")
 ROOT = Path(__file__).resolve().parents[1]  # landing-zone/
 DAILY = ROOT / "data/raw/daily"
 MONTHLY = ROOT / "data/raw/monthly"
+NEW_DATA = ROOT / "data/raw/2026-4-2"
 OUTPUT = Path(__file__).parent / "output"
 OUTPUT.mkdir(exist_ok=True)
 
@@ -43,7 +44,7 @@ INDICATOR_META = {
 
 def load_excel_daily(path: Path, col_name: str) -> pd.Series:
     """读取日频 Excel，返回以日期为索引的 Series（跳过元数据行）。"""
-    df = pd.read_excel(path, sheet_name="指标")
+    df = pd.read_excel(path, sheet_name="指标", engine="openpyxl")
     df["日期"] = pd.to_datetime(df["日期"], errors="coerce")
     df = df.dropna(subset=["日期"])
     df = df.set_index("日期")[col_name]
@@ -73,7 +74,7 @@ def to_month_mean(series: pd.Series) -> pd.DataFrame:
 results = []
 
 # --- BRENT_CRUDE (月均值) ---
-s_brent = load_excel_daily(DAILY / "cross_market.xlsx", "期货收盘价(连续):ICE布油")
+s_brent = load_excel_daily(NEW_DATA / "期货收盘价(连续)-ICE布油.xlsx", "期货收盘价(连续):ICE布油")
 s_brent = s_brent[s_brent.index >= "2024-11-01"]
 df_brent = to_month_mean(s_brent)
 df_brent.columns = ["ref_month", "value"]
@@ -81,7 +82,7 @@ df_brent.insert(0, "indicator_id", "BRENT_CRUDE")
 results.append(df_brent)
 
 # --- XAUUSD (月均值) ---
-s_xau = load_excel_daily(DAILY / "gold.xlsx", "期货收盘价(连续):COMEX黄金")
+s_xau = load_excel_daily(NEW_DATA / "期货收盘价(连续)-COMEX黄金.xlsx", "期货收盘价(连续):COMEX黄金")
 s_xau = s_xau[s_xau.index >= "2024-11-01"]
 df_xau = to_month_mean(s_xau)
 df_xau.columns = ["ref_month", "value"]
@@ -97,7 +98,7 @@ df_fx.insert(0, "indicator_id", "FX_CNY_MID")
 results.append(df_fx)
 
 # --- VIX (月均值) ---
-s_vix = load_excel_daily(DAILY / "cross_market.xlsx", "标准普尔500波动率指数(VIX)")
+s_vix = load_excel_daily(NEW_DATA / "标准普尔500波动率指数(VIX).xlsx", "标准普尔500波动率指数(VIX)")
 s_vix = s_vix[s_vix.index >= "2024-11-01"]
 df_vix = to_month_mean(s_vix)
 df_vix.columns = ["ref_month", "value"]
@@ -209,10 +210,10 @@ print("加工完成")
 print("=" * 60)
 
 sources = {
-    "BRENT_CRUDE": "data/raw/daily/cross_market.xlsx",
-    "XAUUSD": "data/raw/daily/gold.xlsx",
+    "BRENT_CRUDE": "data/raw/2026-4-2/期货收盘价(连续)-ICE布油.xlsx",
+    "XAUUSD": "data/raw/2026-4-2/期货收盘价(连续)-COMEX黄金.xlsx",
     "FX_CNY_MID": "data/raw/daily/cross_market.xlsx",
-    "VIX": "data/raw/daily/cross_market.xlsx",
+    "VIX": "data/raw/2026-4-2/标准普尔500波动率指数(VIX).xlsx",
     "DR007": "data/raw/daily/cn_bond_credit_rates_daily.xlsx",
     "CREDIT_YTM_AA_3Y": "data/raw/daily/cn_bond_credit_rates_daily.xlsx",
     "CGB_3Y_YTM": "data/raw/daily/cn_bond_credit_rates_daily.xlsx",

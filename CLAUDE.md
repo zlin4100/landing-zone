@@ -124,6 +124,22 @@ pytest tests/test_foo.py::test_bar   # single test
 5. 运行全部 ETL → load_derived_daily → build_snapshot --month YYYY-MM
 ```
 
+## 提示词模板工具链
+
+| 文件 | 作用 |
+|------|------|
+| `提示词模板/data-type.csv` | Schema 定义：板块顺序、各板块内指标顺序 |
+| `宏观加工/process_macro.py` | 日度→月度聚合（BRENT、XAUUSD、DR007、FX、VIX、CGB_3Y、CREDIT_AA）+ 专项债进度派生 |
+| `宏观加工/process_macro_remaining.py` | 其余月频指标加工（NBS/PBOC/MOF/GACC 原始 Excel → CSV） |
+| `提示词模板/build_macro_prompt.py` | 拼接两个输出 CSV，按 `data-type.csv` 顺序生成 `市场分析-提示词模板-宏观.md` |
+
+```bash
+# 月末更新提示词模板完整流程
+python3 宏观加工/process_macro.py
+python3 宏观加工/process_macro_remaining.py
+python3 提示词模板/build_macro_prompt.py
+```
+
 ## Environment
 
 - DB connection: `DATABASE_URL` env var or `config/settings.toml`
