@@ -31,7 +31,7 @@
 | SPECIAL_BOND_ISSUE_CUM | EMM01259587 | 中国:发行地方政府债券:…发行新增专项债券:累计值 | 1999-11 ~ 2026-02 | `marco_0316.xlsx` |
 | RRR_LARGE_FIN_INST | EMM01280574 | 中国:人民币存款准备金率:大型存款类金融机构(月) | 1999-11 ~ 2026-02 | `marco_0316.xlsx` |
 | LOCAL_SPECIAL_BOND_TARGET_ANNUAL | EMM01430555 | 中国:政府预期目标:地方专项债 | 2016 ~ 2026 | `special_bonds_annual.xlsx` |
-| RETAIL_SALES_YOY | EMM00063225 | 中国:社会消费品零售总额:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
+| RETAIL_SALES_YOY | EMI00135328 | 中国:社会消费品零售总额:同比 | 1995-01 ~ 2025-12 | `2026-4-8/中国-社会消费品零售总额-同比.xlsx` |
 | CONSUMER_CONFIDENCE | EMM00122031 | 中国:消费者信心指数 | 1999-01 ~ 2026-02 | `growth.xlsx` · `2026-4-2/中国-消费者信心指数.xlsx` |
 | MANUFACTURING_INVEST_CUM_YOY | EMM00027220 | 中国:固定资产投资完成额:制造业:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
 | REAL_ESTATE_INVEST_CUM_YOY | EMI00120220 | 中国:房地产开发投资完成额:累计同比 | 1992-02 ~ 2026-02 | `growth.xlsx` |
@@ -73,7 +73,7 @@
 | `marco_meeting_318.xlsx` | 3/18 补充批次，PBOC / NBS / 海关文件；采购清单内保留 M1_YOY / M2_YOY / URBAN_SURVEYED_UNEMPLOYMENT_RATE / URBAN_DISPOSABLE_INCOME_CUM_YOY，`IMPORT_CUMULATIVE_YOY` 已移出有效清单并在 ETL 中跳过；另含额外列 EMM00087129（各项贷款余额:同比）、EMM00088685（社会融资增量:新增人民币贷款），ETL 跳过 |
 | `marco_0316.xlsx` | 财政部 / PBOC 2 指标 |
 | `special_bonds_annual.xlsx` | 年频；单列，稳定无需频繁更新 |
-| `growth.xlsx` | NBS / 海关合并文件；采购清单内保留 RETAIL_SALES_YOY / CONSUMER_CONFIDENCE / MANUFACTURING_INVEST_CUM_YOY / REAL_ESTATE_INVEST_CUM_YOY / INFRA_INVEST_CUM_YOY / RESID_HOUSE_SALES_CUMULATIVE_YOY / PMI_NEW_EXPORT_ORDERS，`EXPORT_CUMULATIVE_YOY` 已移出有效清单并在 ETL 中跳过 |
+| `growth.xlsx` | NBS / 海关合并文件；采购清单内保留 CONSUMER_CONFIDENCE / MANUFACTURING_INVEST_CUM_YOY / REAL_ESTATE_INVEST_CUM_YOY / INFRA_INVEST_CUM_YOY / RESID_HOUSE_SALES_CUMULATIVE_YOY / PMI_NEW_EXPORT_ORDERS，`EXPORT_CUMULATIVE_YOY` 已移出有效清单并在 ETL 中跳过；`RETAIL_SALES_YOY` 口径由累计同比切换为当月同比（EMI00135328），数据来源改为 `2026-4-8/中国-社会消费品零售总额-同比.xlsx` |
 | `GDP.xlsx` | 季频；仅 GDP_REAL_YOY 一列，截止上季度末 |
 | `import_export.xlsx` | 海关总署；出口/进口金额**当月**同比（EMM00183406 / EMM00183407）；与 `growth.xlsx` 的累计同比（EXPORT_CUMULATIVE_YOY / IMPORT_CUMULATIVE_YOY）及 `marco_meeting_318.xlsx` 的进口累计同比为不同口径，不视为同一指标重叠 |
 | `nbs_macro_noncore_20260309.xlsx` | ⚠️ 旧版文件，使用已废弃的 Choice ID；**已被 `growth.xlsx` 完全取代** |
@@ -101,6 +101,12 @@
 | `期货收盘价(连续)-ICE布油.xlsx` | BRENT_CRUDE | 日频；2013-06-21 ~ 2026-03-31；⚠️ 起始晚于 cross_market.xlsx（1975），历史段仍需原文件 |
 | `标准普尔500波动率指数(VIX).xlsx` | VIX | 日频；1990-01-02 ~ 2026-03-31；⚠️ 起始晚于 cross_market.xlsx（1975），历史段仍需原文件 |
 
+### 2026-4-8/（2026-04-08 批次，口径变更）
+
+| 文件 | 指标代码 | 说明 |
+|---|---|---|
+| `中国-社会消费品零售总额-同比.xlsx` | RETAIL_SALES_YOY | 月频；1995-01 ~ 2025-12；Choice ID 由 EMM00063225（累计同比）切换为 EMI00135328（当月同比），取代 growth.xlsx 中同指标 |
+
 ### deprecated/（不处理）
 
 `VIX.xlsx` · `china_bond.xlsx` · `gdp_quarter.xlsx` · `growth_momentum.xlsx` · `market_1.xlsx` · `oil.xlsx` · `rates.xlsx` · `公开市场操作.xlsx`
@@ -113,3 +119,5 @@
 `marco_meeting_318.xlsx` 中的 `IMPORT_CUMULATIVE_YOY` —— 不在《数据采购清单v3》中，保留文件但该列移出有效清单，ETL 跳过
 
 `growth.xlsx` 中的 `EXPORT_CUMULATIVE_YOY` —— 不在《数据采购清单v3》中，保留文件但该列移出有效清单，ETL 跳过
+
+`growth.xlsx` 中的 `RETAIL_SALES_YOY`（EMM00063225，累计同比） —— 口径已切换为当月同比（EMI00135328），数据来源改为 `2026-4-8/中国-社会消费品零售总额-同比.xlsx`，旧列不再使用

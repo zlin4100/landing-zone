@@ -14,6 +14,7 @@ warnings.filterwarnings("ignore")
 ROOT = Path(__file__).resolve().parents[1]
 MONTHLY = ROOT / "data/raw/monthly"
 NEW_DATA = ROOT / "data/raw/2026-4-2"
+NEW_DATA_0408 = ROOT / "data/raw/2026-4-8"
 OUTPUT = Path(__file__).parent / "output"
 OUTPUT.mkdir(exist_ok=True)
 
@@ -85,9 +86,9 @@ INDICATORS = {
     ),
     # --- growth.xlsx ---
     "RETAIL_SALES_YOY": (
-        "中国:社会消费品零售总额:累计同比", "社会消费品零售总额",
+        "中国:社会消费品零售总额:同比", "社会消费品零售总额",
         "%", "YoY", "NBS", "Growth",
-        "growth.xlsx",
+        NEW_DATA_0408 / "中国-社会消费品零售总额-同比.xlsx",
     ),
     "CONSUMER_CONFIDENCE": (
         "中国:消费者信心指数", "中国:消费者信心指数",

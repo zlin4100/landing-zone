@@ -124,6 +124,12 @@ pytest tests/test_foo.py::test_bar   # single test
 5. 运行全部 ETL → load_derived_daily → build_snapshot --month YYYY-MM
 ```
 
+## 指标口径变更记录
+
+| 日期 | 指标代码 | 变更内容 | 影响文件 |
+|------|----------|----------|----------|
+| 2026-04-08 | RETAIL_SALES_YOY | Choice ID 由 EMM00063225（累计同比）→ EMI00135328（当月同比）；数据来源由 `growth.xlsx` → `2026-4-8/中国-社会消费品零售总额-同比.xlsx` | `宏观加工/process_macro_remaining.py`、`提示词模板/市场分析-提示词模板-宏观.md`、`data/raw/CLAUDE.md` |
+
 ## 提示词模板工具链
 
 | 文件 | 作用 |
